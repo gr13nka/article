@@ -59,9 +59,13 @@ function findBrowser() {
    in the markup — taking pictures should not make the page carry attributes it
    has no other use for. `from`/`to` clip the union of two elements. */
 const SHOTS = [
-  { file: 'web-light.png',      w: 1440, theme: 'light', from: '.art-bar', to: '.demo-hero' },
-  { file: 'web-dark.png',       w: 1440, theme: 'dark',  from: '.art-bar', to: '.demo-hero' },
-  { file: 'web-catppuccin.png', w: 1440, theme: 'dark', dark: 'catppuccin', from: '.art-bar', to: '.demo-hero' },
+  // The hero alone is faithful to the reference but very sparse, which reads as
+  // an empty page at README size. Hiding the hero puts the masthead directly
+  // against the article, so one image carries the crimson bar, the display
+  // serif, the drop cap and real text texture at once.
+  { file: 'web-light.png',      w: 1440, theme: 'light', from: '.art-bar', to: '#article', hide: ['.demo-hero'], max: 1000 },
+  { file: 'web-dark.png',       w: 1440, theme: 'dark',  from: '.art-bar', to: '#article', hide: ['.demo-hero'], max: 1000 },
+  { file: 'web-catppuccin.png', w: 1440, theme: 'dark', dark: 'catppuccin', from: '.art-bar', to: '#article', hide: ['.demo-hero'], max: 1000 },
   { file: 'article-light.png',  w: 1440, theme: 'light', clip: '#article' },
   { file: 'index-light.png',    w: 1440, theme: 'light', clip: '#index' },
   // The gallery is ~10,000px tall, so it is sampled rather than captured whole:
@@ -160,7 +164,9 @@ async function main() {
     const box = await send(ws, 'Runtime.evaluate', { expression: `
       (() => {
         const st = document.createElement('style');
-        st.textContent = ${JSON.stringify(HIDE_CHROME)};
+        st.textContent = ${JSON.stringify(HIDE_CHROME)}
+          + ${JSON.stringify((shot.hide ?? []).join(','))}.split(',').filter(Boolean)
+              .map((s) => s + '{display:none !important}').join('');
         document.head.appendChild(st);
         const q = (s) => {
           const at = s.lastIndexOf('@');
@@ -180,7 +186,8 @@ async function main() {
     const params = { format: 'png', captureBeyondViewport: true };
     if (box.result.value) {
       const b = JSON.parse(box.result.value);
-      params.clip = { x: b.x, y: Math.max(0, b.y), width: b.width, height: Math.min(b.height, 2400), scale: 1 };
+      params.clip = { x: b.x, y: Math.max(0, b.y), width: b.width,
+                      height: Math.min(b.height, shot.max ?? 2400), scale: 1 };
     } else {
       console.log(`    (no element for ${shot.clip} — full viewport instead)`);
     }
