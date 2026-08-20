@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 24" fill="currentColor" role="img" aria-label="section divider">
+  <circle cx="16" cy="12" r="2"/>
+  <rect x="20" y="11.5" width="46" height="1"/>
+  <path d="M84 12 Q77 7 70 12 Q77 17 84 12 Z"/>
+  <path d="M108 12 Q97 4 86 12 Q97 20 108 12 Z"/>
+  <path d="M120 12 Q110 7 120 2 Q130 7 120 12 Z"/>
+  <path d="M120 12 Q110 17 120 22 Q130 17 120 12 Z"/>
+  <path d="M120 12 Q127 2 134 12 Q127 22 120 12 Z"/>
+  <path d="M120 12 Q113 2 106 12 Q113 22 120 12 Z"/>
+  <circle cx="115" cy="7" r="1.2"/>
+  <circle cx="125" cy="7" r="1.2"/>
+  <circle cx="115" cy="17" r="1.2"/>
+  <circle cx="125" cy="17" r="1.2"/>
+  <path d="M132 12 Q143 4 154 12 Q143 20 132 12 Z"/>
+  <path d="M156 12 Q163 7 170 12 Q163 17 156 12 Z"/>
+  <rect x="174" y="11.5" width="46" height="1"/>
+  <circle cx="224" cy="12" r="2"/>
+</svg>

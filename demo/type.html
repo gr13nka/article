@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Article — typography sampler</title>
+
+<!--
+  Two no-flash snippets, inline and before any stylesheet, because a module
+  import resolves after the first paint and the flash has already happened by
+  then. The first is web/theme.js's NO_FLASH_SNIPPET verbatim (THEME_KEY
+  substituted); the second is the same trick for this page's font choice.
+-->
+<script>(function(){try{var m=localStorage.getItem('art-theme');if(m==='light'||m==='dark')document.documentElement.setAttribute('data-theme',m);}catch(e){}})();</script>
+<script>(function(){var d=document.documentElement,k='playfair';try{var f=localStorage.getItem('art-demo-font');if(['playfair','source','vollkorn','lora'].indexOf(f)>=0)k=f;}catch(e){}d.setAttribute('data-font',k);})();</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&amp;family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..700&amp;family=JetBrains+Mono:ital,wght@0,400..700;1,400&amp;family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Mulish:ital,wght@0,400..800;1,400..700&amp;family=Nunito+Sans:ital,wght@0,400..800;1,400..700&amp;family=Onest:wght@400..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..900;1,8..60,400..700&amp;family=Vollkorn:ital,wght@0,400..900;1,400..700&amp;display=swap">
+
+<link rel="stylesheet" href="../web/tokens.css">
+
+<style>
+/* ==========================================================================
+   demo/type.html — page-local styles only.
+
+   Every class here is prefixed `demo-`. Nothing in this file may become an
+   `art-` class: the component layer does not exist yet and a sampler is not
+   allowed to pre-empt it. Colour comes exclusively from layer-2 semantic
+   tokens, so both themes work without this file knowing a theme exists.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+/* --------------------------------------------------------------------------
+   THE FOUR PAIRINGS
+
+   Switched by [data-font] on <html>, persisted under `art-demo-font`. Only the
+   three --art-font-* roles are re-pointed; tokens.css is never edited, so the
+   winner of this comparison is applied there afterwards by changing three
+   lines and nothing else.
+
+   --demo-cap-* are the static fallback for the drop cap. They are refined at
+   runtime from the real font metrics (see the module at the end of the file);
+   these values only have to be close enough to survive the first paint.
+   -------------------------------------------------------------------------- */
+html {
+  --demo-cap-size: 5.6em;
+  --demo-cap-leading: 0.8em;
+  --demo-cap-top: -2px;
+}
+
+html[data-font="playfair"] {
+  --art-font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --art-font-body:    'Mulish', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --art-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+html[data-font="source"] {
+  --art-font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --art-font-body:    'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --art-font-mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --demo-cap-size: 5.9em;
+}
+html[data-font="vollkorn"] {
+  --art-font-display: 'Vollkorn', Georgia, 'Times New Roman', serif;
+  --art-font-body:    'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --art-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --demo-cap-size: 5.4em;
+}
+html[data-font="lora"] {
+  --art-font-display: 'Lora', Georgia, 'Times New Roman', serif;
+  --art-font-body:    'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --art-font-mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --demo-cap-size: 5.5em;
+}
+
+/* --------------------------------------------------------------------------
+   DARK-THEME OPTICAL COMPENSATION
+
+   A high-contrast display serif set in Catppuccin's light `text` on a dark
+   ground loses its hairlines: greyscale antialiasing renders a thin light
+   stroke dimmer than a thin dark one, so the headline reads a weight lighter
+   than it is set. Two corrections — one step up on the display weight
+   (variable faces whose wght axis stops earlier simply clamp, so Lora stays
+   at 700), and full-strength smoothing instead of the `antialiased` that
+   tokens.css sets globally and which thins light-on-dark text further.
+
+   This lives in the page rather than in tokens.css because light-dark()
+   carries colours only: Article currently has no way to express a
+   theme-conditional NON-colour token. Flagged in the handover.
+   -------------------------------------------------------------------------- */
+html { --demo-display-weight: 700; }
+html[data-theme="dark"] { --demo-display-weight: 800; }
+html[data-theme="dark"] body { -webkit-font-smoothing: auto; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) { --demo-display-weight: 800; }
+  html:not([data-theme="light"]) body { -webkit-font-smoothing: auto; }
+}
+
+/* The ramp jumps straight from 1.15 (heading) to 1.6 (body); a lede, a pull
+   quote and any paragraph set above --art-text-base want something between.
+   Held locally until Article grows the token. */
+html { --demo-leading-lede: 1.35; }
+
+/* --------------------------------------------------------------------------
+   FRAME
+   -------------------------------------------------------------------------- */
+.demo-shell {
+  width: 100%;
+  max-width: calc(var(--art-measure) * 2 + var(--art-space-9));
+  margin-inline: auto;
+  padding-inline: var(--art-space-5);
+}
+
+/* --------------------------------------------------------------------------
+   CONTROLS — a sticky strip across the top, contents pushed to the right.
+
+   Deliberately in the flow rather than floating: a fixed panel pinned to the
+   corner sits on top of the right-hand masthead, which is exactly the half of
+   the specimen being compared.
+   -------------------------------------------------------------------------- */
+.demo-controls {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--art-space-2) var(--art-space-5);
+  padding: var(--art-space-3) var(--art-space-5);
+  background: var(--art-surface);
+  border-bottom: var(--art-rule-width) solid var(--art-rule);
+}
+
+.demo-control-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--art-space-2);
+}
+
+.demo-control-label {
+  font-family: var(--art-font-body);
+  font-size: var(--art-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--art-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--art-ink-muted);
+}
+
+.demo-chip {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--art-font-body);
+  font-size: var(--art-text-xs);
+  line-height: 1.4;
+  color: var(--art-ink);
+  background: var(--art-surface);
+  border: var(--art-rule-width) solid var(--art-rule);
+  padding: var(--art-space-1) var(--art-space-3);
+  cursor: pointer;
+  transition:
+    color var(--art-motion-fast) var(--art-motion-ease),
+    background-color var(--art-motion-fast) var(--art-motion-ease),
+    border-color var(--art-motion-fast) var(--art-motion-ease);
+}
+.demo-chip:hover { border-color: var(--art-rule-strong); color: var(--art-ink-strong); }
+.demo-chip[aria-pressed="true"] {
+  background: var(--art-accent);
+  border-color: var(--art-accent);
+  color: var(--art-accent-ink);
+}
+.demo-chip:focus-visible { outline: 2px solid var(--art-focus); outline-offset: 2px; }
+
+.demo-readout {
+  font-family: var(--art-font-mono);
+  font-size: var(--art-text-xs);
+  color: var(--art-ink-muted);
+}
+
+/* --------------------------------------------------------------------------
+   MASTHEAD — full-bleed bar, split into the same two language columns as the
+   specimen below so the italic serif can be judged in both scripts at once.
+   -------------------------------------------------------------------------- */
+.demo-masthead {
+  background: var(--art-bar);
+  color: var(--art-bar-ink);
+  padding-block: var(--art-space-4);
+}
+.demo-masthead-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--art-space-8);
+}
+.demo-masthead-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--art-space-2) var(--art-space-5);
+}
+.demo-masthead-side + .demo-masthead-side {
+  border-left: var(--art-rule-width) solid var(--art-bar-ink);
+  padding-left: var(--art-space-8);
+}
+.demo-wordmark {
+  font-family: var(--art-font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: var(--art-text-2xl);
+  line-height: var(--art-leading-heading);
+}
+.demo-masthead-nav {
+  font-size: var(--art-text-sm);
+  color: var(--art-bar-ink);
+}
+.demo-masthead-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+.demo-masthead-nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.demo-masthead-nav a:focus-visible { outline: 2px solid var(--art-bar-ink); outline-offset: 2px; }
+.demo-dot { padding-inline: var(--art-space-2); }
+
+/* --------------------------------------------------------------------------
+   SPECIMEN GRID
+   -------------------------------------------------------------------------- */
+.demo-page { padding-block: var(--art-space-8) var(--art-space-9); }
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--art-space-8);
+}
+.demo-specimen + .demo-specimen {
+  border-left: var(--art-rule-width) solid var(--art-rule);
+  padding-left: var(--art-space-8);
+}
+.demo-specimen { min-width: 0; }
+
+/* --------------------------------------------------------------------------
+   TYPOGRAPHIC ROLES
+   -------------------------------------------------------------------------- */
+.demo-eyebrow {
+  margin: 0 0 var(--art-space-4);
+  font-size: var(--art-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--art-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--art-ink-muted);
+  text-align: center;
+}
+
+.demo-display {
+  margin: 0 0 var(--art-space-5);
+  font-family: var(--art-font-display);
+  font-weight: var(--demo-display-weight);
+  font-size: clamp(var(--art-text-3xl), 5.5vw, var(--art-text-5xl));
+  line-height: var(--art-leading-heading);
+  color: var(--art-ink-strong);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.demo-lede {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--art-text-lg);
+  line-height: var(--demo-leading-lede);
+  color: var(--art-ink);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.demo-rule {
+  border: 0;
+  border-top: var(--art-rule-width) solid var(--art-rule);
+  margin-block: var(--art-space-6);
+}
+
+.demo-prose { overflow-wrap: break-word; }
+.demo-prose p {
+  margin: 0 0 var(--art-space-4);
+  max-width: var(--art-measure);
+}
+.demo-prose h2,
+.demo-prose h3 {
+  font-family: var(--art-font-display);
+  font-weight: var(--demo-display-weight);
+  line-height: var(--art-leading-heading);
+  color: var(--art-ink-strong);
+  max-width: var(--art-measure);
+}
+.demo-prose h2 { font-size: var(--art-text-2xl); margin: var(--art-space-7) 0 var(--art-space-3); }
+.demo-prose h3 { font-size: var(--art-text-xl);  margin: var(--art-space-6) 0 var(--art-space-2); }
+.demo-prose a { color: var(--art-link); text-underline-offset: 2px; }
+
+/* Drop cap. Float plus a tuned line-height: the floated box has to be tall
+   enough to indent exactly three lines, and the letter's baseline has to land
+   on the third line's baseline. Both quantities are font-metric dependent, so
+   the values below are variables that the module at the end of the file
+   measures per pairing rather than numbers guessed once. */
+.demo-dropcap::first-letter {
+  float: left;
+  font-family: var(--art-font-display);
+  font-weight: var(--demo-display-weight);
+  color: var(--art-accent);
+  font-size: var(--demo-cap-size);
+  line-height: var(--demo-cap-leading);
+  margin-top: var(--demo-cap-top);
+  margin-right: var(--art-space-3);
+}
+
+.demo-quote {
+  margin: var(--art-space-6) 0;
+  padding-left: var(--art-space-5);
+  border-left: var(--art-rule-width) solid var(--art-accent);
+  max-width: var(--art-measure);
+}
+.demo-quote blockquote {
+  margin: 0;
+  font-family: var(--art-font-display);
+  font-style: italic;
+  font-size: var(--art-text-lg);
+  line-height: var(--demo-leading-lede);
+  color: var(--art-ink-strong);
+}
+.demo-quote blockquote p { margin: 0; max-width: none; }
+.demo-quote figcaption {
+  margin-top: var(--art-space-3);
+  font-size: var(--art-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--art-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--art-ink-muted);
+}
+
+/* Mono faces carry more width and a larger x-height than the body sans at the
+   same nominal size, so inline code is stepped down to sit on the same line. */
+.demo-code {
+  font-family: var(--art-font-mono);
+  font-size: 0.9em;
+  background: var(--art-code-bg);
+  color: var(--art-code-ink);
+  padding: 0 var(--art-space-1);
+}
+
+.demo-pre {
+  margin: var(--art-space-5) 0;
+  max-width: var(--art-measure);
+  padding: var(--art-space-4);
+  background: var(--art-code-bg);
+  color: var(--art-code-ink);
+  border: var(--art-rule-width) solid var(--art-rule);
+  overflow-x: auto;
+  font-family: var(--art-font-mono);
+  font-size: var(--art-text-sm);
+  line-height: var(--art-leading-body);
+}
+.demo-pre code { font: inherit; }
+
+/* --------------------------------------------------------------------------
+   METRICS STRIP — the same sentence at three steps of the ramp, so size is
+   judged on the same words rather than on three different ones.
+   -------------------------------------------------------------------------- */
+.demo-metrics { display: grid; gap: var(--art-space-5); }
+.demo-metrics .demo-eyebrow { text-align: left; margin-bottom: 0; }
+.demo-metric p { margin: var(--art-space-1) 0 0; max-width: var(--art-measure); }
+.demo-metric-label {
+  font-family: var(--art-font-mono);
+  font-size: var(--art-text-xs);
+  color: var(--art-ink-muted);
+}
+.demo-size-sm   { font-size: var(--art-text-sm); }
+.demo-size-base { font-size: var(--art-text-base); }
+.demo-size-lg   { font-size: var(--art-text-lg); }
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .demo-masthead-inner,
+  .demo-grid { grid-template-columns: 1fr; gap: var(--art-space-6); }
+  .demo-masthead-side + .demo-masthead-side,
+  .demo-specimen + .demo-specimen {
+    border-left: 0;
+    padding-left: 0;
+    border-top: var(--art-rule-width) solid var(--art-rule);
+    padding-top: var(--art-space-6);
+  }
+  .demo-masthead-side + .demo-masthead-side { border-top-color: var(--art-bar-ink); }
+}
+
+@media (max-width: 700px) {
+  .demo-controls {
+    justify-content: flex-start;
+    padding-inline: var(--art-space-4);
+  }
+  .demo-page { padding-block: var(--art-space-6) var(--art-space-8); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="demo-controls">
+  <div class="demo-control-row">
+    <span class="demo-control-label" id="demo-theme-label">Theme</span>
+    <button class="demo-chip" type="button" data-theme-mode="system" aria-pressed="false">System</button>
+    <button class="demo-chip" type="button" data-theme-mode="light"  aria-pressed="false">Light</button>
+    <button class="demo-chip" type="button" data-theme-mode="dark"   aria-pressed="false">Dark</button>
+    <span class="demo-readout">→ <span id="demo-resolved">light</span></span>
+  </div>
+  <div class="demo-control-row">
+    <span class="demo-control-label" id="demo-font-label">Pairing</span>
+    <button class="demo-chip" type="button" data-font-key="playfair" aria-pressed="false">Playfair&nbsp;+&nbsp;Mulish</button>
+    <button class="demo-chip" type="button" data-font-key="source"   aria-pressed="false">Source&nbsp;Serif&nbsp;+&nbsp;Nunito</button>
+    <button class="demo-chip" type="button" data-font-key="vollkorn" aria-pressed="false">Vollkorn&nbsp;+&nbsp;Inter</button>
+    <button class="demo-chip" type="button" data-font-key="lora"     aria-pressed="false">Lora&nbsp;+&nbsp;Onest</button>
+  </div>
+</div>
+
+<header class="demo-masthead">
+  <div class="demo-masthead-inner demo-shell">
+    <div class="demo-masthead-side" lang="en">
+      <span class="demo-wordmark">The Article Review</span>
+      <nav class="demo-masthead-nav" aria-label="Sections, English">
+        <a href="#">Essays</a><span class="demo-dot">·</span><a href="#">Type</a><span class="demo-dot">·</span><a href="#">Archive</a><span class="demo-dot">·</span><a href="#">Colophon</a>
+      </nav>
+    </div>
+    <div class="demo-masthead-side" lang="ru">
+      <span class="demo-wordmark">Артикль. Обозрение</span>
+      <nav class="demo-masthead-nav" aria-label="Разделы, русский">
+        <a href="#">Очерки</a><span class="demo-dot">·</span><a href="#">Шрифт</a><span class="demo-dot">·</span><a href="#">Архив</a><span class="demo-dot">·</span><a href="#">О журнале</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="demo-page">
+  <div class="demo-grid demo-shell">
+
+    <!-- ============================ ENGLISH ============================ -->
+    <article class="demo-specimen" lang="en">
+      <p class="demo-eyebrow">English · Craft · Note 04</p>
+      <h1 class="demo-display">Setting Type for the Long Read</h1>
+      <p class="demo-lede">A page is not a container for words. It is an argument about how long a reader is willing to stay, and the measure, the leading and the rule are all part of that argument.</p>
+
+      <hr class="demo-rule">
+
+      <div class="demo-prose">
+        <p class="demo-dropcap">Typography is the last thing anyone notices in a publication and the first thing that decides whether they stay. A reader will forgive a thin argument long before they forgive a line that runs too far, because the second failure is felt in the body before it is understood in the mind. Measure, leading and size are not decoration laid over the writing; they are the conditions under which the writing can be read at all.</p>
+
+        <p>The rules that survive contact with a real page are unglamorous ones. Keep the line between sixty and seventy-five characters. Let the leading grow as the measure grows, and never the other way round. Set the headings in a face with real contrast, so that the eye can find its place without being shouted at. Spend colour once, structurally, and let everything else be ink on paper and a hairline.</p>
+
+        <h2>What a Hairline Is For</h2>
+        <p>A rule is a promise that two things are different. Used sparingly it does the work a shadow only pretends to do: it separates without lifting, and it costs nothing at any pixel density. A page built from hairlines and whitespace reads as considered rather than styled, which is the entire ambition of an editorial system.</p>
+
+        <h3>The Measure, Precisely</h3>
+        <figure class="demo-quote">
+          <blockquote>
+            <p>Anything that makes reading easier — and, just as importantly, makes it feel easier — is repaid by a reader who goes further than they meant to.</p>
+          </blockquote>
+          <figcaption>The Article Review, colophon</figcaption>
+        </figure>
+
+        <p>The measure lives in exactly one place, <code class="demo-code">var(--art-measure)</code>, and is corrected in exactly one place. That is the argument for tokens in a sentence: not that they save typing, but that they leave nowhere for a second, quietly different opinion to survive.</p>
+
+<pre class="demo-pre"><code>/* One number decides the whole page. */
+/* Мера набора: не длиннее 68 знаков. */
+.article__body {
+  font-family: var(--art-font-body);
+  font-size:   var(--art-text-base);
+  line-height: var(--art-leading-body);
+  max-width:   var(--art-measure);
+}</code></pre>
+      </div>
+
+      <hr class="demo-rule">
+
+      <section class="demo-metrics" aria-label="Size ramp, English">
+        <p class="demo-eyebrow">The ramp, on one sentence</p>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-sm · 15px</span>
+          <p class="demo-size-sm">Hairlines, generous whitespace, and one crimson spent where it actually means something.</p>
+        </div>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-base · 17px</span>
+          <p class="demo-size-base">Hairlines, generous whitespace, and one crimson spent where it actually means something.</p>
+        </div>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-lg · 19px</span>
+          <p class="demo-size-lg">Hairlines, generous whitespace, and one crimson spent where it actually means something.</p>
+        </div>
+      </section>
+    </article>
+
+    <!-- ============================ РУССКИЙ ============================ -->
+    <article class="demo-specimen" lang="ru">
+      <p class="demo-eyebrow">Русский · Ремесло · Заметка 04</p>
+      <h1 class="demo-display">Набор для долгого чтения</h1>
+      <p class="demo-lede">Полоса — не контейнер для слов. Это довод о том, сколько читатель готов остаться, и мера набора, интерлиньяж и линейка — части этого довода.</p>
+
+      <hr class="demo-rule">
+
+      <div class="demo-prose">
+        <p class="demo-dropcap">Типографику замечают последней, а решает она первой: останется читатель или уйдёт. Слабый довод простят куда скорее, чем слишком длинную строку, потому что вторую промашку тело чувствует раньше, чем ум успевает её осознать. Мера набора, интерлиньяж и кегль — не украшение поверх текста, а условия, при которых текст вообще возможно читать.</p>
+
+        <p>Правила, которые доживают до настоящей полосы, невзрачны. Держите строку в пределах шестидесяти — семидесяти пяти знаков. Пусть интерлиньяж растёт вслед за мерой, а не наоборот. Набирайте заголовки контрастной антиквой, чтобы глаз находил своё место сам, а не отшатывался от крика. Тратьте цвет один раз и по делу, а всё остальное оставьте чёрным по белому да тонкой линейкой.</p>
+
+        <h2>Зачем нужна тонкая линейка</h2>
+        <p>Линейка — это обещание, что две вещи различны. При скупом обращении она делает работу, которую тень только изображает: разделяет, не поднимая, и ничего не стоит при любой плотности экрана. Полоса, собранная из одних линеек и воздуха, читается как продуманная, а не как оформленная, — в этом и состоит вся затея редакционной системы.</p>
+
+        <h3>Мера набора, точнее</h3>
+        <figure class="demo-quote">
+          <blockquote>
+            <p>Всё, что делает чтение легче — и, что не менее важно, заставляет его казаться легче, — возвращается читателем, который прочёл дальше, чем собирался.</p>
+          </blockquote>
+          <figcaption>«Артикль», из выходных данных</figcaption>
+        </figure>
+
+        <p>Мера набора живёт ровно в одном месте — <code class="demo-code">var(--art-measure)</code> — и правится ровно в одном месте. Вот весь довод в пользу токенов одной фразой: не в том, что они экономят набор, а в том, что второму, тихо отличному мнению негде уцелеть.</p>
+
+<pre class="demo-pre"><code>/* Одно число решает всю полосу. */
+/* Measure: no longer than 68 characters. */
+.article__body {
+  font-family: var(--art-font-body);
+  font-size:   var(--art-text-base);
+  line-height: var(--art-leading-body);
+  max-width:   var(--art-measure);
+}</code></pre>
+      </div>
+
+      <hr class="demo-rule">
+
+      <section class="demo-metrics" aria-label="Кегельная лестница, русский">
+        <p class="demo-eyebrow">Лестница кеглей на одной фразе</p>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-sm · 15px</span>
+          <p class="demo-size-sm">Тонкие линейки, щедрый воздух и один багрец, потраченный там, где он и вправду что-то значит.</p>
+        </div>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-base · 17px</span>
+          <p class="demo-size-base">Тонкие линейки, щедрый воздух и один багрец, потраченный там, где он и вправду что-то значит.</p>
+        </div>
+        <div class="demo-metric">
+          <span class="demo-metric-label">--art-text-lg · 19px</span>
+          <p class="demo-size-lg">Тонкие линейки, щедрый воздух и один багрец, потраченный там, где он и вправду что-то значит.</p>
+        </div>
+      </section>
+    </article>
+
+  </div>
+</main>
+
+<script type="module">
+import { initTheme } from '../web/theme.js';
+
+const FONT_KEY = 'art-demo-font';
+const FONTS = ['playfair', 'source', 'vollkorn', 'lora'];
+const root = document.documentElement;
+
+const press = (buttons, attr, value) => {
+  for (const b of buttons) b.setAttribute('aria-pressed', String(b.getAttribute(attr) === value));
+};
+
+/* ---------------------------------------------------------------------------
+   Drop-cap fitting.
+
+   A three-line drop cap only looks intentional when two things are exactly
+   true: its cap height spans two body line-heights plus the body's own cap
+   height, and its baseline sits on the third line's baseline. Both depend on
+   cap height, ascent and descent, which differ per face — so they are measured
+   off the rendered fonts instead of guessed, and re-measured whenever the
+   pairing changes. The CSS above holds a static approximation for the moment
+   before the webfonts arrive, and for browsers without canvas font metrics.
+   --------------------------------------------------------------------------- */
+const probeCtx = document.createElement('canvas').getContext('2d');
+
+const faceMetrics = (weight, sizePx, family, glyph) => {
+  probeCtx.font = `${weight} ${sizePx}px ${family}`;
+  const m = probeCtx.measureText(glyph);
+  return { cap: m.actualBoundingBoxAscent, ascent: m.fontBoundingBoxAscent, descent: m.fontBoundingBoxDescent };
+};
+
+const fitDropCaps = () => {
+  const rootStyle = getComputedStyle(root);
+  const display = rootStyle.getPropertyValue('--art-font-display').trim();
+  const weight = rootStyle.getPropertyValue('--demo-display-weight').trim() || '700';
+  const PROBE = 100;
+
+  for (const el of document.querySelectorAll('.demo-dropcap')) {
+    const cs = getComputedStyle(el);
+    const size = parseFloat(cs.fontSize);
+    const line = parseFloat(cs.lineHeight) || size * 1.6;
+    const glyph = (el.textContent || '').trim().charAt(0);
+    if (!glyph) continue;
+
+    const body = faceMetrics(cs.fontWeight, size, cs.fontFamily, glyph.toUpperCase());
+    const cap = faceMetrics(weight, PROBE, display, glyph);
+    if (![body.ascent, body.descent, body.cap, cap.ascent, cap.descent, cap.cap].every(Number.isFinite)) continue;
+
+    // Baseline of the body's nth line, measured from the paragraph's content top.
+    const bodyBaseline = (line - (body.ascent + body.descent)) / 2 + body.ascent;
+    // Cap height wanted: two whole lines plus the body's own capital.
+    const fontSize = (2 * line + body.cap) / (cap.cap / PROBE);
+    const asc = (cap.ascent / PROBE) * fontSize;
+    const desc = (cap.descent / PROBE) * fontSize;
+
+    // Solve line-height and margin together so the floated box bottom lands 4px
+    // inside the third line (indenting three, clearing the fourth) while the
+    // baseline still falls on the third line's baseline.
+    const k = bodyBaseline + (desc - asc) / 2;
+    const leading = 2 * (line - 4 - k);
+    const top = 2 * line + k - leading / 2;
+
+    el.style.setProperty('--demo-cap-size', fontSize.toFixed(2) + 'px');
+    el.style.setProperty('--demo-cap-leading', leading.toFixed(2) + 'px');
+    el.style.setProperty('--demo-cap-top', top.toFixed(2) + 'px');
+  }
+};
+
+const theme = initTheme({
+  onChange: (mode, resolved) => {
+    press(document.querySelectorAll('[data-theme-mode]'), 'data-theme-mode', mode);
+    document.getElementById('demo-resolved').textContent = resolved;
+    fitDropCaps();
+  },
+});
+for (const b of document.querySelectorAll('[data-theme-mode]')) {
+  b.addEventListener('click', () => theme.set(b.dataset.themeMode));
+}
+
+const setFont = (key) => {
+  const next = FONTS.includes(key) ? key : FONTS[0];
+  root.setAttribute('data-font', next);
+  try { localStorage.setItem(FONT_KEY, next); } catch (e) { /* private browsing: choice just won't persist */ }
+  press(document.querySelectorAll('[data-font-key]'), 'data-font-key', next);
+  document.fonts.ready.then(fitDropCaps);
+  fitDropCaps();
+};
+for (const b of document.querySelectorAll('[data-font-key]')) {
+  b.addEventListener('click', () => setFont(b.dataset.fontKey));
+}
+
+setFont(root.getAttribute('data-font'));
+document.fonts.ready.then(fitDropCaps);
+</script>
+
+</body>
+</html>

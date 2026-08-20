@@ -1,0 +1,20 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # No install step: the checker is dependency-free by design, so CI runs
+      # exactly what a contributor runs locally.
+      - name: Drift and invariants
+        run: node tools/check-sync.mjs
+      - name: Contrast, both themes
+        run: node tools/check-sync.mjs --contrast

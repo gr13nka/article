@@ -1,0 +1,304 @@
+/*
+ * Article design tokens.
+ *
+ * Two layers, and the split is the whole point:
+ *
+ *   Layer 1 — primitives. Raw colour values. Theme-independent. A component
+ *   must never reference one. They exist only to be pointed at from layer 2.
+ *
+ *   Layer 2 — semantic roles. The only names a component is allowed to use.
+ *   Each is defined exactly ONCE, via light-dark(), so there is no second copy
+ *   of the palette in a media query to drift out of sync.
+ *
+ * Theming is therefore not a component concern at all: switching themes means
+ * changing `color-scheme`, which light-dark() reads. Components never learn
+ * that a theme exists.
+ *
+ * Values in STYLE.md are the contract; this file is its CSS mirror, not a
+ * place to make new decisions.
+ */
+
+:root {
+  /* Light theme is the default; `light dark` lets the OS preference win when
+     no explicit choice has been made. web/theme.js overrides via [data-theme]. */
+  color-scheme: light dark;
+
+  /* ---------------------------------------------------------------------
+     LAYER 1 — PRIMITIVES
+     --------------------------------------------------------------------- */
+
+  /* Light ramp, eyedropped from masteringemacs.org, with one deliberate
+     divergence: the reference ground is literally pure #FFFFFF, and Article
+     warms it to #FCFBF9 for long-form reading. The surfaces and the hairline
+     warm with it, because a cool surface stepping off a warm ground reads as a
+     colour mistake rather than as elevation.
+
+     The INK ramp stays cool (#181E2A, #585E6D). Warm paper with cool ink is
+     the classic pairing, and the blue cast is what lets these greys sit
+     comfortably next to Catppuccin's blue-black base in the other theme. */
+  --art-c-paper-0:     #FCFBF9;
+  --art-c-paper-50:    #F5F3EE;
+  --art-c-paper-100:   #EBE8E1;
+  --art-c-rule:        #E3DFD8;
+  --art-c-ink-500:     #585E6D;
+  --art-c-ink-700:     #181E2A;
+  --art-c-ink-900:     #000000;
+
+  /* The reference spends exactly one crimson structurally — masthead fill,
+     every heading, and the drop cap are all the same #7F0002. The brighter
+     -500 exists only because a small filled button needs more chroma than
+     #7F0002 has to read as an action rather than as a dark rectangle. */
+  --art-c-crimson-700: #7F0002;
+  --art-c-crimson-500: #AE002E;
+  --art-c-crimson-900: #3B0D18;
+  --art-c-blue-600:    #0E6FBB;
+
+  /* Dark ramp — JetBrains Darcula.
+
+     Two values are NOT Darcula's own, and the reasons generalise to any palette
+     borrowed from an editor theme:
+
+     `raised` is #35383A, not JetBrains' panel grey #3C3F41. Editor themes tune
+     their editor background carefully and their panel chrome much less so, and
+     #3C3F41 puts muted text at 3.69:1 — below AA. Always check a borrowed
+     palette's SECONDARY surfaces.
+
+     `accent` is #E16F77, not One Dark's #E06C75. On this ground the original
+     measures 4.431:1, just under the 4.5 floor. The fix is a 0.6% lightness
+     lift with hue and saturation held exactly — 3/255 on two channels, visually
+     the same colour, 4.55:1. */
+  --art-dk-page:      #2B2B2B;
+  --art-dk-raised:    #35383A;
+  --art-dk-sunken:    #232323;
+  --art-dk-rule:      #4A4D4F;
+  --art-dk-rule-2:    #5E6265;
+  --art-dk-ink:       #ECECEA;
+  --art-dk-ink-2:     #D2D1CE;
+  --art-dk-ink-3:     #A8A6A3;
+  --art-dk-near-black:#1A1A1A;
+  --art-dk-accent:    #E16F77;
+  --art-dk-accent-2:  #EC8189;
+  /* Danger is a vivid scarlet rather than another dusty red: against a
+     low-chroma accent it has to differ in CHROMA, not just hue, or an error
+     state reads as ordinary emphasis. dE 50 from the accent, 87 from warning. */
+  --art-dk-alert:     #FF5F52;
+  --art-dk-action:    #6CB6FF;
+  --art-dk-success:   #8FD0A3;
+  --art-dk-warning:   #E8AC74;
+
+  /* ---------------------------------------------------------------------
+     LAYER 2 — SEMANTIC ROLES
+     --------------------------------------------------------------------- */
+
+  /* Surfaces */
+  --art-surface:        light-dark(var(--art-c-paper-0),   var(--art-dk-page));
+  --art-surface-raised: light-dark(var(--art-c-paper-50),  var(--art-dk-raised));
+  --art-surface-sunken: light-dark(var(--art-c-paper-100), var(--art-dk-sunken));
+
+  /* Ink. Three steps, and the top one is genuinely blacker than body text —
+     the reference sets display headlines in pure #000 against #181E2A body. */
+  --art-ink-strong:     light-dark(var(--art-c-ink-900),   var(--art-dk-ink));
+  --art-ink:            light-dark(var(--art-c-ink-700),   var(--art-dk-ink-2));
+  --art-ink-muted:      light-dark(var(--art-c-ink-500),   var(--art-dk-ink-3));
+
+  /* Rules. Article separates surfaces with hairlines, never with shadows. */
+  --art-rule:           light-dark(var(--art-c-rule),      var(--art-dk-rule));
+  --art-rule-strong:    light-dark(var(--art-c-ink-500),   var(--art-dk-rule-2));
+
+  /* The accent, and the role flip that makes two themes work.
+     In light, the accent is dark and carries WHITE text on top of it.
+     In dark, Catppuccin's red is a pastel — it carries CRUST text instead.
+     Same role, inverted contrast direction. See STYLE.md. */
+  --art-accent:         light-dark(var(--art-c-crimson-700), var(--art-dk-accent));
+  --art-accent-strong:  light-dark(var(--art-c-crimson-500), var(--art-dk-accent-2));
+  --art-accent-ink:     light-dark(#FFFFFF,                  var(--art-dk-near-black));
+
+  /* Masthead. Four roles rather than two, because the bar resolves
+     differently in each theme and that difference is a design decision, not a
+     palette lookup:
+       light — a solid crimson block. The block IS the edge, so no rule.
+       dark  — a mantle surface whose bottom rule is the accent. The brand
+               persists as an EDGE at full chroma, rather than as a fill
+               crushed to 5% lightness (which measured 1.02:1 against the page
+               ground — a masthead with no visible boundary at all). */
+  --art-bar:            light-dark(var(--art-c-crimson-700), var(--art-dk-raised));
+  --art-bar-ink:        light-dark(#FFFFFF,                  var(--art-dk-ink));
+  --art-bar-mark:       light-dark(#FFFFFF,                  var(--art-dk-accent));
+  --art-bar-edge:       light-dark(transparent,              var(--art-dk-accent));
+  /* A hairline INSIDE the bar (a nav separator) cannot use --art-rule: the rule
+     colours are tuned against the page, not against the bar. */
+  --art-bar-rule:       light-dark(color-mix(in srgb, #FFFFFF 30%, transparent), var(--art-dk-rule));
+
+  /* The contrasting action colour — the blue half of the reference's button pair. */
+  --art-action:         light-dark(var(--art-c-blue-600),    var(--art-dk-action));
+  --art-action-ink:     light-dark(#FFFFFF,                  var(--art-dk-near-black));
+
+  --art-link:           light-dark(var(--art-c-crimson-700), var(--art-dk-accent));
+  --art-focus:          light-dark(var(--art-c-blue-600),    var(--art-dk-action));
+
+  /* Status */
+  --art-danger:         light-dark(#A4142B,                  var(--art-dk-alert));
+  --art-success:        light-dark(#1F6B3A,                  var(--art-dk-success));
+  --art-warning:        light-dark(#8A5A00,                  var(--art-dk-warning));
+
+  /* Code register */
+  --art-code-bg:        light-dark(var(--art-c-paper-100), var(--art-dk-sunken));
+  --art-code-ink:       light-dark(var(--art-c-ink-700),   var(--art-dk-ink));
+
+  --art-selection-bg:   light-dark(#FBDCD2, var(--art-dk-rule));
+  --art-selection-ink:  light-dark(var(--art-c-ink-900), var(--art-dk-ink));
+
+  /* ---------------------------------------------------------------------
+     TYPE — provisional. Locked by demo/type.html, not by argument.
+     --------------------------------------------------------------------- */
+  /* Stack order is load-bearing, not cosmetic. The Latin face comes FIRST so
+     Latin renders in it; the CJK face follows, and the browser falls through to
+     it only for codepoints the Latin face has no glyph for. Noto Sans/Serif SC
+     also contain Latin glyphs, so putting them first would silently take over
+     the whole page. Google serves them in ~300 unicode-range slices, so a page
+     with no Chinese on it downloads none of them.
+
+     SC = Simplified. For Traditional, swap SC -> TC in these three lines; the
+     rest of the system is unaffected. */
+  --art-font-display: 'Vollkorn', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
+  --art-font-body:    'Inter', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --art-font-mono:    'JetBrains Mono', 'Noto Sans Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --art-text-xs:   13px;
+  --art-text-sm:   15px;
+  --art-text-base: 17px;
+  --art-text-lg:   19px;
+  --art-text-xl:   23px;
+  --art-text-2xl:  28px;
+  --art-text-3xl:  36px;
+  --art-text-4xl:  48px;
+  --art-text-5xl:  64px;
+
+  --art-leading-body:    1.6;
+  --art-leading-lede:    1.38;
+  --art-leading-heading: 1.15;
+  --art-tracking-eyebrow: 0.14em;
+
+  /* Reading measure. The single most load-bearing number in an editorial
+     system: past ~75 characters the eye loses the line return. */
+  --art-measure: 68ch;
+  /* For centred ledes and pull quotes, which need a shorter line than running
+     body text to stay readable when they are not left-aligned. */
+  --art-measure-narrow: 44ch;
+
+  /* Space */
+  --art-space-1: 4px;
+  --art-space-2: 8px;
+  --art-space-3: 12px;
+  --art-space-4: 16px;
+  --art-space-5: 24px;
+  --art-space-6: 32px;
+  --art-space-7: 48px;
+  --art-space-8: 64px;
+  --art-space-9: 96px;
+
+  /* Geometry. Squared off is canon — this token exists so that someone who
+     forks the kit and wants softer corners has exactly one place to change. */
+  --art-radius: 0px;
+  --art-rule-width: 1px;
+
+  /* Motion. Short, flat, no overshoot — an editorial system does not bounce. */
+  --art-motion-fast: 120ms;
+  --art-motion-base: 180ms;
+  --art-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   THEME-CONDITIONAL NON-COLOUR TOKENS
+   ---------------------------------------------------------------------------
+   light-dark() carries colours only, so a value that must differ per theme but
+   is NOT a colour has to be declared in a duplicated block. That duplication is
+   exactly what light-dark() exists to avoid, so this block is kept deliberately
+   tiny, is enumerated in STYLE.md, and is verified by check-sync's [theme-pair]
+   rule, which fails the build if the two dark blocks stop agreeing.
+
+   Add to it only when there is genuinely no colour-based way to express the
+   need. Today there are two, and both come from the same fact: light text on a
+   dark ground optically thins.
+
+     --art-weight-display  a high-contrast serif loses its hairlines in dark
+     --art-font-smooth     subpixel smoothing thins light-on-dark further, so
+                           dark opts out of `antialiased` rather than in
+   --------------------------------------------------------------------------- */
+
+:root {
+  --art-weight-display: 700;
+  --art-font-smooth: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --art-weight-display: 800;
+    --art-font-smooth: auto;
+  }
+}
+
+[data-theme="dark"] {
+  --art-weight-display: 800;
+  --art-font-smooth: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   ALTERNATE DARK PALETTE
+   ---------------------------------------------------------------------------
+   A second dark palette is one block of primitive overrides — no semantic role
+   is redeclared, no component is touched, and light is unaffected because light
+   reads the --art-c-* ramp. Set data-dark on <html>; it composes freely with
+   data-theme.
+
+   Catppuccin Mocha (https://catppuccin.com), unmodified except for `alert`:
+   Mocha has only one red, so danger would otherwise be identical to the accent
+   and an error state would be indistinguishable from ordinary emphasis.
+   --------------------------------------------------------------------------- */
+
+[data-dark="catppuccin"] {
+  --art-dk-page:      #1E1E2E;
+  --art-dk-raised:    #313244;
+  --art-dk-sunken:    #181825;
+  --art-dk-rule:      #45475A;
+  --art-dk-rule-2:    #585B70;
+  --art-dk-ink:       #CDD6F4;
+  --art-dk-ink-2:     #BAC2DE;
+  --art-dk-ink-3:     #A6ADC8;
+  --art-dk-near-black:#11111B;
+  --art-dk-accent:    #F38BA8;
+  --art-dk-accent-2:  #EBA0AC;
+  --art-dk-alert:     #FF6E82;
+  --art-dk-action:    #89B4FA;
+  --art-dk-success:   #A6E3A1;
+  --art-dk-warning:   #FAB387;
+}
+
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"]  { color-scheme: dark; }
+
+/* Base layer — the ground and the defaults every screen inherits. */
+
+body {
+  background: var(--art-surface);
+  color: var(--art-ink);
+  font-family: var(--art-font-body);
+  font-size: var(--art-text-base);
+  line-height: var(--art-leading-body);
+  -webkit-font-smoothing: var(--art-font-smooth);
+  -moz-osx-font-smoothing: var(--art-font-smooth);
+}
+
+::selection {
+  background: var(--art-selection-bg);
+  color: var(--art-selection-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

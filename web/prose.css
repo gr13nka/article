@@ -1,0 +1,354 @@
+/*
+ * Article — the long-form reading layer.
+ *
+ * Everything here is scoped under .art-prose and styles BARE ELEMENTS. Rendered
+ * Markdown carries no class attributes, so a reading surface that required them
+ * would need a rewriting step between the content and the page; this file is how
+ * that step is avoided.
+ *
+ * It is a separate stylesheet on purpose: an app UI links web/article.css alone
+ * and pays nothing for a register it never renders. Nothing here duplicates a
+ * component — .art-prose sets the page's reading voice, article.css sets its
+ * controls — and neither file imports the other.
+ *
+ * The same four rules as article.css apply: semantic tokens only, no shadow, no
+ * gradient, no filter, every corner var(--art-radius), and every mark an
+ * ornaments/*.svg applied as a mask.
+ */
+
+/* ============================================================
+   1. The column
+   ------------------------------------------------------------
+   --art-measure is the most load-bearing number in the system (STYLE.md §3):
+   past ~75 characters the eye loses the line return on the way back.
+   ============================================================ */
+
+.art-prose {
+  max-width: var(--art-measure);
+  font-family: var(--art-font-body);
+  font-size: var(--art-text-base);
+  line-height: var(--art-leading-body);
+  color: var(--art-ink);
+}
+
+/* ============================================================
+   2. Vertical rhythm
+   ------------------------------------------------------------
+   Flow spacing, not bottom margins: every block starts at zero and the gap is
+   owned by the SPACE BETWEEN two blocks, which is the only place it is ever
+   actually observed. A block therefore carries no trailing margin into a
+   container it happens to end, and there is no margin collapsing to reason
+   about.
+   ============================================================ */
+
+/* :where() keeps the reset at zero specificity beyond .art-prose itself, so the
+   flow rules below — and every per-element rule further down — outrank it
+   without anyone having to count selectors. A bare element list here would be
+   MORE specific than `> * + *` and would silently cancel the whole rhythm. */
+.art-prose :where(h1, h2, h3, h4, p, ul, ol, blockquote, pre, figure, table, hr) {
+  margin: 0;
+}
+
+.art-prose > * + * {
+  margin-top: var(--art-space-5);
+}
+
+/* Blocks nested one level down — a paragraph inside a quote, a paragraph inside
+   a list item — need the same rhythm at a smaller amplitude. */
+.art-prose blockquote > * + *,
+.art-prose li > * + * {
+  margin-top: var(--art-space-4);
+}
+
+/* ============================================================
+   3. Headings
+   ------------------------------------------------------------
+   A heading belongs to the text that FOLLOWS it, so it takes far more space
+   above than below. The size of the gap above is what tells a scanning reader
+   where a section starts; a symmetric heading reads as floating between two
+   sections rather than opening one.
+
+   Colour follows STYLE.md §10: --art-ink-strong is for the display headline
+   only, and every heading below it carries the structural crimson.
+   ============================================================ */
+
+.art-prose h1,
+.art-prose h2,
+.art-prose h3,
+.art-prose h4 {
+  font-family: var(--art-font-display);
+  font-weight: var(--art-weight-display);
+  line-height: var(--art-leading-heading);
+  color: var(--art-accent);
+}
+
+.art-prose h1 {
+  font-size: var(--art-text-4xl);
+  color: var(--art-ink-strong);
+}
+
+.art-prose h2 {
+  font-size: var(--art-text-2xl);
+}
+
+.art-prose h3 {
+  font-size: var(--art-text-xl);
+}
+
+.art-prose h4 {
+  font-size: var(--art-text-lg);
+}
+
+.art-prose > h2 {
+  margin-top: var(--art-space-8);
+}
+
+.art-prose > h3,
+.art-prose > h4 {
+  margin-top: var(--art-space-7);
+}
+
+.art-prose > h2 + *,
+.art-prose > h3 + *,
+.art-prose > h4 + * {
+  margin-top: var(--art-space-4);
+}
+
+.art-prose > :first-child {
+  margin-top: 0;
+}
+
+/* A code span inside a heading keeps the mono face but drops the ground: a
+   filled chip inside a crimson serif line reads as a UI element that has fallen
+   into the prose. The em size keeps it from pushing the heading's line box open. */
+.art-prose h1 code,
+.art-prose h2 code,
+.art-prose h3 code,
+.art-prose h4 code {
+  font-size: 0.86em;
+  padding: 0;
+  color: inherit;
+  background-color: transparent;
+}
+
+/* ============================================================
+   4. Inline text
+   ============================================================ */
+
+.art-prose a {
+  color: var(--art-link);
+  text-decoration: underline;
+  text-decoration-thickness: var(--art-rule-width);
+  /* Enough offset that the rule passes under a descender instead of through it;
+     stated in em so it tracks the type size wherever the link sits. */
+  text-underline-offset: 0.18em;
+  transition: text-decoration-thickness var(--art-motion-fast) var(--art-motion-ease);
+}
+
+.art-prose a:hover {
+  text-decoration-thickness: calc(var(--art-rule-width) * 2);
+}
+
+/* A link that leaves the site says so. The mark is the ornament file masked
+   over currentColor, so it is always exactly the colour of the link it follows. */
+.art-prose a[target='_blank']::after {
+  content: '';
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  margin-left: var(--art-space-1);
+  background-color: currentColor;
+  mask-image: url('../ornaments/external-link.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url('../ornaments/external-link.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.art-prose strong {
+  font-weight: var(--art-weight-display);
+  color: var(--art-ink-strong);
+}
+
+.art-prose em {
+  font-style: italic;
+}
+
+.art-prose small {
+  font-size: var(--art-text-sm);
+  color: var(--art-ink-muted);
+}
+
+/* ============================================================
+   5. Lists
+   ------------------------------------------------------------
+   Square markers, not discs. --art-radius is 0 through the whole system and a
+   list bullet is not exempt from it.
+   ============================================================ */
+
+.art-prose ul,
+.art-prose ol {
+  padding-left: var(--art-space-5);
+}
+
+.art-prose ul {
+  list-style: square;
+}
+
+.art-prose ol {
+  list-style: decimal;
+}
+
+.art-prose li::marker {
+  color: var(--art-ink-muted);
+}
+
+.art-prose li + li {
+  margin-top: var(--art-space-2);
+}
+
+/* A nested list is part of its parent item, so it takes the tight intra-item
+   gap rather than the gap between two top-level blocks. */
+.art-prose li > ul,
+.art-prose li > ol {
+  margin-top: var(--art-space-2);
+}
+
+/* ============================================================
+   6. Quotation
+   ------------------------------------------------------------
+   An edge and an indent, and no quotation-mark glyph: a giant open-quote is
+   decoration standing in for structure, and this system spends its structure on
+   rules and space.
+   ============================================================ */
+
+.art-prose blockquote {
+  padding-left: var(--art-space-5);
+  border-left: calc(var(--art-rule-width) * 2) solid var(--art-rule-strong);
+  font-style: italic;
+  color: var(--art-ink-muted);
+}
+
+/* ============================================================
+   7. The break
+   ------------------------------------------------------------
+   An <hr> in an article is a change of subject, not a line across the page, so
+   it renders as the dinkus. --art-space-5 is 24px, the ornament's viewBox
+   height, and the multiplier states its 5:1 aspect.
+   ============================================================ */
+
+.art-prose hr {
+  width: calc(var(--art-space-5) * 5);
+  max-width: 100%;
+  height: var(--art-space-5);
+  margin: var(--art-space-8) auto;
+  border: 0;
+  background-color: var(--art-ink-muted);
+  mask-image: url('../ornaments/dinkus.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url('../ornaments/dinkus.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* ============================================================
+   8. The code register
+   ============================================================ */
+
+.art-prose code {
+  font-family: var(--art-font-mono);
+  /* Mono faces run large at a shared pixel size; em keeps the code span the
+     optical size of the text it interrupts. */
+  font-size: 0.88em;
+  padding: 0 var(--art-space-1);
+  color: var(--art-code-ink);
+  background-color: var(--art-code-bg);
+  border-radius: var(--art-radius);
+}
+
+.art-prose pre {
+  padding: var(--art-space-5);
+  font-family: var(--art-font-mono);
+  font-size: var(--art-text-sm);
+  line-height: var(--art-leading-body);
+  color: var(--art-code-ink);
+  background-color: var(--art-code-bg);
+  border: var(--art-rule-width) solid var(--art-rule);
+  border-radius: var(--art-radius);
+  overflow-x: auto;
+}
+
+/* Inside a block the ground is already there; the span must not draw a second one. */
+.art-prose pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  background-color: transparent;
+}
+
+/* ============================================================
+   9. Figures and images
+   ============================================================ */
+
+.art-prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.art-prose figure {
+  margin-block: var(--art-space-7);
+}
+
+.art-prose figcaption {
+  margin-top: var(--art-space-2);
+  font-size: var(--art-text-sm);
+  line-height: var(--art-leading-body);
+  color: var(--art-ink-muted);
+  text-align: center;
+}
+
+/* ============================================================
+   10. Tables
+   ------------------------------------------------------------
+   The same editorial table as .art-table, reached without a class: no vertical
+   rules, one emphasised underline beneath the header, hairlines between rows.
+   ============================================================ */
+
+.art-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--art-text-sm);
+}
+
+.art-prose th {
+  padding: var(--art-space-3) var(--art-space-4);
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--art-tracking-eyebrow);
+  color: var(--art-ink-muted);
+  border-bottom: var(--art-rule-width) solid var(--art-rule-strong);
+}
+
+.art-prose td {
+  padding: var(--art-space-3) var(--art-space-4);
+  border-bottom: var(--art-rule-width) solid var(--art-rule);
+  vertical-align: top;
+}
+
+.art-prose th:first-child,
+.art-prose td:first-child {
+  padding-left: 0;
+}
+
+.art-prose th:last-child,
+.art-prose td:last-child {
+  padding-right: 0;
+}
