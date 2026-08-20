@@ -413,7 +413,12 @@ three knobs, that is a signal to revisit this document, not to special-case the 
   deleted once their decisions were recorded in `DECISIONS.md`, which is where the reasoning
   belongs — a comparison page is scaffolding, not a record.
 - **The sync map and amendment recipe live in the `article-style` skill**, not here.
-- **`tools/check-sync.mjs` is the gate.** Run it before every commit.
+- **`tools/check-sync.mjs` is the gate.** Run it before every commit, and
+  `--contrast` after touching any colour — it measures every documented pair in *every*
+  palette, including the alternates, and prints the table.
+- **The component gallery in `demo/index.html` is the visual gate.** It renders every
+  component in every state; three shipped defects were found the first time it was built, none
+  of which the checker could see. Keep it exhaustive.
 
 
 ---

@@ -19,8 +19,8 @@ Half-decided ideas belong in **Unsettled**, not in `STYLE.md` as a hedge.
 - **Print / poster arm.** Karakuli has one (`poster/`). Whether an editorial system needs a
   separate louder register, or whether its print voice is simply itself at a larger size, is
   not decided.
-- **Publishing.** The repo is built public-shaped (MIT, README, no machine-specific paths in
-  the checker) but has not been published. Visibility is the author's call.
+- ~~**Publishing.**~~ Settled 2026-08-20: published publicly at
+  `github.com/gr13nka/article`. See the entry below.
 - **Syntax highlighting for the code register.** `--art-code-bg` / `--art-code-ink` cover a
   code block as a block. A token-level highlighting palette — which would want most of the
   Catppuccin accent ramp, and a light-theme equivalent that does not currently exist — is
@@ -227,6 +227,80 @@ The error mattered because it did not surface as a false failure — it surfaced
 The general rule this is an instance of: a contrast pair's threshold is a property of the
 **type size the pair is used at**, not of the pair itself. Any pair added to `PAIRS` needs its
 minimum chosen from where it actually appears on screen.
+
+#### A surface role may flip direction between themes, the same way the accent does
+
+`--art-surface-disabled` is `--art-c-paper-100` in light and `--art-dk-raised` in dark: on
+paper an inert control reads as pressed *into* the page, but on a dark ground "sunken" is
+nearly invisible — the previous value measured **1.07:1** against the page in the Catppuccin
+palette, so the disabled state was carried almost entirely by text opacity.
+
+What drove it: building the full component gallery rendered every control in every state in
+all three palettes at once, which is the only way this was ever going to be noticed. A
+disabled field looks fine in isolation; it looks wrong beside an enabled one.
+
+The general rule, which now has two instances (this and the accent in §1 of `STYLE.md`): a
+semantic role names a **job**, and the direction that does that job is allowed to invert
+between themes. Deciding a dark value by adjusting the light one's lightness is the mistake;
+deciding it from the job is the method.
+
+#### The gallery is the component layer's regression surface, and it earned that on day one
+
+`demo/index.html`'s gallery renders every component in every state — rest, hover,
+focus-visible, disabled, invalid, checked, indeterminate — grouped and labelled.
+
+Building it immediately surfaced three defects that had already shipped:
+
+- `.art-table tbody th` had no `border-bottom`, so the row separator hairline stopped dead at
+  the row-header column. The rule that gave row headers their padding and weight forgot the
+  border.
+- `.art-table__num` was inert on a `<thead>` cell: `.art-table thead th { text-align: left }`
+  is specificity (0,1,2) against a bare `.art-table__num`'s (0,1,0), so a numeric *column
+  heading* sat left-aligned above its right-aligned figures. Fixed by scoping the selector.
+- The disabled-field ground above.
+
+None of these were findable by the checker, and none were visible in the showcase's ordinary
+prose. They were visible the moment the states were placed side by side. That is the argument
+for keeping the gallery exhaustive even though it is tedious: it is cheaper than the bugs.
+
+#### The authoring skill is checked separately from the other docs
+
+`check-sync` gained a `[skill]` rule: when the `article-style` skill is installed, it must
+itself name every `.art-*` class, every ornament and every font family.
+
+What drove it: the existing class-coverage rule passes if a class is named in **any** doc.
+`STYLE.md` named them all, so the skill silently rotted — it was missing six classes and an
+ornament, and its type section still named the fonts that had been replaced hours earlier,
+while the checker reported OK throughout.
+
+The skill is the file an agent actually works from, so "covered by some other document" is
+not good enough for it. The rule is skipped entirely when no skill is installed, because a
+fresh clone has none and that is not drift.
+
+#### Screenshots are generated, never hand-made
+
+`tools/shoot.mjs` produces every image in `docs/screenshots/` by driving the cached Chromium
+over CDP. It hides the demo's own control strip and class-name annotations, and can compose a
+shot out of non-adjacent parts of the page (`hide`, and `from`/`to` selectors).
+
+What drove it: the screenshots are committed, because GitHub needs them in-repo to render the
+README — which makes them the one artefact here that can go stale without `check-sync`
+noticing. A hand-cropped PNG would silently stop matching the code at the first design change.
+Generated, they are re-made with one command.
+
+The README shot deliberately composes the masthead onto the *article* page rather than
+showing the hero section, which is faithful to the reference but almost empty and reads as a
+blank page at README size.
+
+#### Published publicly at github.com/gr13nka/article, MIT
+
+The repo was built public-shaped from the first commit — MIT licence, a README written for
+strangers, no machine-specific paths in the tooling, and a `homedir()`-derived skill path with
+an env override so the checker works on a clone that has no skill installed.
+
+Sharing was the original reason this system is a sibling repo rather than a register inside
+Karakuli, so publishing is the point rather than an afterthought. `FORK.md` exists because the
+intended use is that someone re-skins it from their own reference images.
 
 #### `prefers-reduced-motion` is honoured — a deliberate divergence from Karakuli
 

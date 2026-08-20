@@ -86,5 +86,14 @@ a README aimed at strangers. Keep it that way.
 - **Don't derive a dark value by darkening the light one.** Decide the element's job, then
   pick the value that does that job in that theme (`STYLE.md` §1).
 - **`--art-radius` is `0` and there are no shadows.** A radio button in Article is a square.
-- Any new token or class must be named in `STYLE.md`, or `check-sync` fails the build.
+- Any new token or class must be named in `STYLE.md`, or `check-sync` fails the build. It
+  must **also** be named in the `article-style` skill — that is a separate `[skill]` rule,
+  because the general class check passes if any single doc mentions the class, which let the
+  skill rot silently while the build stayed green.
+- **Screenshots are generated.** After any visible design change run `node tools/shoot.mjs`.
+  They are committed (GitHub needs them in-repo to render the README), so they are the one
+  artefact that goes stale without `check-sync` noticing.
+- A semantic role names a **job**, and its direction may invert between themes — the accent
+  (fill in light, ink in dark) and `--art-surface-disabled` (sunken in light, raised in dark)
+  are both instances. Never derive a dark value by adjusting the light one's lightness.
 - Re-run `node tools/check-sync.mjs --contrast` after touching any colour. Both themes.
