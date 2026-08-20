@@ -1,134 +1,106 @@
-# Forking Article
+# Making it yours
 
-Article is a **starting point**, not a finished brand. It is built to be re-skinned by a
-person and an LLM working together from reference images — which is exactly how Article
-itself was made, by sampling screenshots of a site whose typography we liked.
+Article is a starting point. It's built to be re-skinned — by you, or by you and an LLM
+working from a screenshot of something you like. That's how Article itself was made.
 
-This file is the whole recipe. **You do not need to read `STYLE.md` to re-skin the kit.**
+You don't need to read `STYLE.md` to do this. Everything you need is here.
 
----
+## Six values
 
-## The short version
+These decide how the system feels. Everything else can stay as it is. They're all near the
+top of `web/tokens.css`.
 
-Six values decide whether a fork feels like a different system. Everything else can stay.
+| Token | What it is |
+|---|---|
+| `--art-c-paper-0` | page background, light |
+| `--art-c-ink-700` | body text, light |
+| `--art-c-crimson-700` | **accent**, light |
+| `--art-dk-page` | page background, dark |
+| `--art-dk-accent` | **accent**, dark |
+| `--art-font-display` / `--art-font-body` | the two fonts |
 
-| Token | In `web/tokens.css` | What it is |
-|---|---|---|
-| `--art-c-paper-0` | light primitives | the page, light |
-| `--art-c-ink-700` | light primitives | body text, light |
-| `--art-c-crimson-700` | light primitives | **the accent**, light |
-| `--art-dk-page` | dark primitives | the page, dark |
-| `--art-dk-accent` | dark primitives | **the accent**, dark |
-| `--art-font-display` / `--art-font-body` | type | the two faces |
-
-Change those, run the checker, and you have a different design system.
+Change them, then run:
 
 ```sh
 node tools/check-sync.mjs --contrast
 ```
 
-That command is the **stop condition**. It measures every text-on-surface pair in every
-palette and fails below WCAG AA. A fork is finished when it is green.
+Green means you're done. That's the only test you need to pass.
 
----
+## Getting colours out of a picture
 
-## Working from a reference image
-
-Screenshot the design you want to borrow from, then read the colours out of it rather than
-guessing them from a description:
+Don't guess hex codes from a screenshot. Read them:
 
 ```sh
 node tools/palette-from-image.mjs ref.png --roles
 ```
 
-You get the dominant colours with hue/saturation/lightness, a suggested mapping onto Article's
-roles, and **the contrast of each suggestion already measured** — so an unusable colour is
-rejected before you adopt it, not after.
+You get the main colours, a suggested mapping onto Article's roles, and the contrast of each
+one already measured — so a colour that won't work gets rejected before you use it.
 
-The flag that matters is `--box`, because the colour you actually want is almost never the
-most common pixel on the page:
+Use `--box` to sample one part of the image. This matters: the colour you want is usually a
+button or a header bar, not the most common pixel on the page.
 
 ```sh
-node tools/palette-from-image.mjs ref.png --box 1240,500,1480,540   # just the button
+node tools/palette-from-image.mjs ref.png --box 1240,500,1480,540
 ```
 
-Sample the masthead, the buttons, a heading, and the page ground as separate regions. That is
-four commands and it gives you the whole palette.
-
----
+Sample the header, a button, a heading and the background separately. Four commands, whole
+palette.
 
 ## Then
 
-1. Put the values into the **primitive** blocks in `web/tokens.css` — the `--art-c-*` (light)
-   and `--art-dk-*` (dark) groups near the top. Do not touch anything below them.
-2. Run `node tools/check-sync.mjs --contrast`. Fix whatever it flags (see the traps below).
-3. If you changed either font, re-derive the drop cap — three lines of arithmetic, in
-   `STYLE.md` §3 and in a comment above `.art-dropcap` in `web/article.css`.
-4. Look at `demo/index.html` in both themes. That is the whole system on one page.
+1. Put the values in the `--art-c-*` (light) and `--art-dk-*` (dark) blocks in
+   `web/tokens.css`. Don't touch anything below them.
+2. Run the checker. Fix what it flags.
+3. Changed a font? Redo the drop cap maths — three lines, in `STYLE.md` §3.
+4. Open `demo/index.html` and look at it in both themes.
 
----
+## Don't break these
 
-## The rules that keep it coherent
+- **Components never use a raw colour.** They use roles like `--art-accent`. Need a new
+  colour? Add a role for it.
+- **Define each colour once**, with `light-dark()`. Two copies always drift apart.
+- **No colours inside `data:` URIs.** The icon can never change with the theme. Use a file in
+  `ornaments/` with `mask-image`.
+- **No hardcoded `border-radius`.** Use `var(--art-radius)`. Want rounded corners? Change
+  that one value and everything follows.
+- **No shadows, no gradients.**
+- **One accent colour.** A second one halves the meaning of the first.
 
-Break these and the result stops being a design system and becomes a pile of settings.
+## Four things that will bite you
 
-- **Components never reference a primitive.** They use semantic roles (`--art-accent`,
-  `--art-ink`, `--art-surface`). If you need a colour that has no role, add the role.
-- **Every semantic colour is declared once, via `light-dark()`.** Never redeclare a palette
-  in a `prefers-color-scheme` block — two copies drift, one cannot.
-- **No colour inside a `data:` URI.** `currentColor` cannot reach in, so such a mark can never
-  follow the theme. Marks live in `ornaments/` and are applied with `mask-image` +
-  `background-color: currentColor`.
-- **No literal `border-radius`.** Use `var(--art-radius)`. Want soft corners? Change that one
-  token and every component follows.
-- **No `box-shadow`, no gradients.** Depth comes from hairlines and surface steps.
-- **One accent.** Spent everywhere it belongs. A second one halves the meaning of the first.
+We hit all four. They cost real time.
 
----
+**A borrowed colour will miss AA by a hair.** It was picked for someone else's background,
+not yours. Fix it by nudging *lightness* only, keeping hue and saturation the same — it stays
+the same colour to the eye. Article's dark accent is One Dark's `#E06C75` nudged to
+`#E16F77`. Three units out of 255, and it's the difference between failing and passing.
+`palette-from-image.mjs` works this out for you.
 
-## Four traps, each already paid for
+**Check the secondary surfaces too, not just the background.** Editor themes get their main
+background right and their panel colours wrong. JetBrains Darcula's own panel grey `#3C3F41`
+fails AA, so Article uses `#35383A` instead.
 
-These cost real debugging time to find. They will cost you the same if you rediscover them.
+**Keep your error colour away from your accent.** If both are red, an error stops looking
+like an error. It still shows — it just doesn't mean anything any more.
 
-**A borrowed accent was tuned against someone else's background.** Expect it to miss your
-contrast floor by a hair. The fix is a minimal *lightness* lift with hue and saturation held
-exactly — which keeps it visually the same colour. Article's own dark accent is One Dark's
-`#E06C75` lifted 0.6% to `#E16F77`: three units out of 255 on two channels, and the
-difference between 4.43:1 and 4.55:1. `palette-from-image.mjs` computes this lift for you and
-prints it.
+**A deep saturated red won't work on a dark background.** Article's light accent gets 1.51:1
+there. Dark accents have to be lighter and less saturated. So your light and dark accent are
+the same *role*, not the same colour. Don't fight this.
 
-**Check a borrowed palette's secondary surfaces, not just its background.** Editor themes tune
-their editor background with great care and their panel chrome barely at all. JetBrains
-Darcula's own panel grey `#3C3F41` puts muted text at 3.69:1 — below AA — which is why
-Article's Darcula uses `#35383A` instead.
+## Adding a whole dark theme
 
-**Keep danger away from the accent in chroma, not merely in hue.** If your accent is a red,
-your error colour needs real separation from it — aim for a distance of 40+ in RGB. Otherwise
-the error state still *shows*, it just stops *meaning* anything. Catppuccin Mocha ships only
-one red, which is why Article changes exactly one value from the upstream flavour.
-
-**A saturated crimson cannot reach 4.5:1 on a dark ground.** Article's light accent `#7F0002`
-manages 1.51:1 there, and at full saturation anything clearing 4.5:1 is forced toward scarlet.
-So dark accents are lighter and lower-chroma by necessity. **Your light and dark accent share
-a role, not a hue** — do not try to make them the same colour.
-
----
-
-## Adding a whole dark palette
-
-Copy the `[data-dark="catppuccin"]` block in `web/tokens.css`, rename it, change the fifteen
-values. No semantic role is redeclared and no component is touched — that is the entire
-mechanism. The checker discovers your block automatically and holds it to the same floor as
-the others.
+Copy the `[data-dark="catppuccin"]` block in `web/tokens.css`, rename it, change the values.
+Nothing else changes — no component, no role. Then:
 
 ```html
-<html data-dark="yourpalette">
+<html data-dark="yourtheme">
 ```
 
----
+The checker finds your block on its own and holds it to the same standard.
 
-## Going further
+## More
 
-`THEMING.md` has the longer version of all of this. `STYLE.md` is the constitution — read it
-when you want to know *why* a rule exists, not to follow this recipe. `DECISIONS.md` records
-every choice and what was rejected, which is the file to check before re-litigating something.
+`THEMING.md` goes deeper. `STYLE.md` explains why the rules exist. `DECISIONS.md` records
+what was already tried and rejected — worth a look before changing something structural.

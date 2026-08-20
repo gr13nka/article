@@ -15,7 +15,8 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync, readdirSync, statSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer } from 'node:http';
@@ -30,17 +31,22 @@ const MIME = { html: 'text/html', css: 'text/css', js: 'text/javascript', svg: '
 
 function findBrowser() {
   const cache = join(homedir(), 'Library/Caches/ms-playwright');
-  const candidates = [];
+  // chrome-headless-shell first: it exists precisely to be driven over CDP and
+  // opens its debugging port without argument. Full Chrome is the fallback.
+  const shells = [], fulls = [];
   if (existsSync(cache)) {
     for (const d of readdirSync(cache)) {
       for (const p of [
         join(cache, d, 'chrome-headless-shell-mac-x64/chrome-headless-shell'),
         join(cache, d, 'chrome-headless-shell-mac-arm64/chrome-headless-shell'),
+      ]) if (existsSync(p)) shells.push(p);
+      for (const p of [
         join(cache, d, 'chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
         join(cache, d, 'chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-      ]) if (existsSync(p)) candidates.push(p);
+      ]) if (existsSync(p)) fulls.push(p);
     }
   }
+  const candidates = [...shells, ...fulls];
   for (const p of ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
                    '/Applications/Chromium.app/Contents/MacOS/Chromium']) {
     if (existsSync(p)) candidates.push(p);
@@ -49,19 +55,27 @@ function findBrowser() {
   return candidates[0];
 }
 
-/* Each shot: a viewport, a theme, an optional dark palette, and the element to
-   frame. Clipping to a selector rather than capturing the full page is what
-   keeps these legible in a README at 49% width. */
+/* Each shot names existing elements in the demo rather than requiring markers
+   in the markup — taking pictures should not make the page carry attributes it
+   has no other use for. `from`/`to` clip the union of two elements. */
 const SHOTS = [
-  { file: 'web-light.png',      w: 1440, h: 1100, theme: 'light', clip: '[data-shot="hero"]' },
-  { file: 'web-dark.png',       w: 1440, h: 1100, theme: 'dark',  clip: '[data-shot="hero"]' },
-  { file: 'web-catppuccin.png', w: 1440, h: 1100, theme: 'dark', dark: 'catppuccin', clip: '[data-shot="hero"]' },
-  { file: 'article-light.png',  w: 1440, h: 1400, theme: 'light', clip: '[data-shot="article"]' },
-  { file: 'index-light.png',    w: 1440, h: 1400, theme: 'light', clip: '[data-shot="index"]' },
-  { file: 'gallery-light.png',  w: 1440, h: 1600, theme: 'light', clip: '[data-shot="gallery"]' },
-  { file: 'mobile-light.png',   w: 1440, h: 1100, theme: 'light', clip: '[data-shot="phones"]' },
-  { file: 'mobile-dark.png',    w: 1440, h: 1100, theme: 'dark',  clip: '[data-shot="phones"]' },
+  { file: 'web-light.png',      w: 1440, theme: 'light', from: '.art-bar', to: '.demo-hero' },
+  { file: 'web-dark.png',       w: 1440, theme: 'dark',  from: '.art-bar', to: '.demo-hero' },
+  { file: 'web-catppuccin.png', w: 1440, theme: 'dark', dark: 'catppuccin', from: '.art-bar', to: '.demo-hero' },
+  { file: 'article-light.png',  w: 1440, theme: 'light', clip: '#article' },
+  { file: 'index-light.png',    w: 1440, theme: 'light', clip: '#index' },
+  { file: 'gallery-light.png',  w: 1440, theme: 'light', clip: '#gallery' },
+  { file: 'mobile-light.png',   w: 1440, theme: 'light', clip: '.demo-phones-strip' },
+  { file: 'mobile-dark.png',    w: 1440, theme: 'dark',  clip: '.demo-phones-strip' },
 ];
+
+/* The demo's own furniture — the sticky control strip and the little class-name
+   annotations — explains the kit to a reader of the page, but in a README
+   screenshot it reads as clutter over the design. Hidden for the capture only. */
+const HIDE_CHROME = `
+  .demo-controls, .demo-marker { display: none !important; }
+  html { scroll-behavior: auto !important; }
+`;
 
 const send = (() => {
   let id = 0;
@@ -95,8 +109,19 @@ async function main() {
 
   const bin = findBrowser();
   console.log(`  browser: ${bin.split('/').slice(-1)[0]}`);
-  const proc = spawn(bin, ['--headless=new', '--remote-debugging-port=9333', '--hide-scrollbars',
-    '--force-color-profile=srgb', '--disable-gpu', '--no-sandbox', 'about:blank'], { stdio: 'ignore' });
+  const profile = mkdtempSync(join(tmpdir(), 'article-shoot-'));
+  const args = ['--remote-debugging-port=9333', `--user-data-dir=${profile}`, '--hide-scrollbars',
+    '--force-color-profile=srgb', '--disable-gpu', '--no-sandbox', '--no-first-run',
+    '--disable-extensions',
+    // Keep the browser away from the OS keychain. Without these, Chrome asks
+    // macOS for its "Safe Storage" key on a fresh profile so it can encrypt
+    // cookies and passwords — an alarming prompt, and completely pointless for
+    // a throwaway profile that only ever loads localhost and takes pictures.
+    '--use-mock-keychain', '--password-store=basic',
+    '--disable-sync', '--disable-features=Translate,MediaRouter',
+    'about:blank'];
+  if (!bin.includes('chrome-headless-shell')) args.unshift('--headless=new');
+  const proc = spawn(bin, args, { stdio: 'ignore' });
 
   let wsUrl;
   for (let i = 0; i < 60 && !wsUrl; i++) {
@@ -114,7 +139,7 @@ async function main() {
 
   for (const shot of SHOTS) {
     await send(ws, 'Emulation.setDeviceMetricsOverride',
-      { width: shot.w, height: shot.h, deviceScaleFactor: 2, mobile: false }, sessionId);
+      { width: shot.w, height: 1200, deviceScaleFactor: 2, mobile: false }, sessionId);
 
     const qs = `?theme=${shot.theme}${shot.dark ? `&dark=${shot.dark}` : ''}`;
     await send(ws, 'Page.navigate', { url: `http://127.0.0.1:${PORT}/demo/index.html${qs}` }, sessionId);
@@ -131,16 +156,25 @@ async function main() {
     await wait(900);
 
     const box = await send(ws, 'Runtime.evaluate', { expression: `
-      (() => { const el = document.querySelector(${JSON.stringify(shot.clip)});
-        if (!el) return null;
-        const r = el.getBoundingClientRect();
-        return JSON.stringify({ x: r.x + scrollX, y: r.y + scrollY, width: r.width, height: r.height }); })()
+      (() => {
+        const st = document.createElement('style');
+        st.textContent = ${JSON.stringify(HIDE_CHROME)};
+        document.head.appendChild(st);
+        const q = (s) => document.querySelector(s);
+        const a = q(${JSON.stringify(shot.from ?? shot.clip)});
+        const b = ${shot.to ? `q(${JSON.stringify(shot.to)})` : 'a'};
+        if (!a || !b) return null;
+        const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        const top = Math.min(ra.top, rb.top) + scrollY;
+        const bottom = Math.max(ra.bottom, rb.bottom) + scrollY;
+        return JSON.stringify({ x: 0, y: top, width: innerWidth, height: bottom - top });
+      })()
     `, returnByValue: true }, sessionId);
 
     const params = { format: 'png', captureBeyondViewport: true };
     if (box.result.value) {
       const b = JSON.parse(box.result.value);
-      params.clip = { x: b.x, y: b.y, width: b.width, height: Math.min(b.height, 2200), scale: 1 };
+      params.clip = { x: b.x, y: Math.max(0, b.y), width: b.width, height: Math.min(b.height, 2400), scale: 1 };
     } else {
       console.log(`    (no element for ${shot.clip} — full viewport instead)`);
     }
@@ -152,6 +186,9 @@ async function main() {
   }
 
   ws.close(); proc.kill(); server.close();
+  // Chrome may still be flushing its profile as it exits; a failed tmp cleanup
+  // must not fail a successful run.
+  try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
   console.log(`\n  ${SHOTS.length} screenshots in docs/screenshots/\n`);
 }
 
