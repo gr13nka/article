@@ -94,6 +94,12 @@
   --art-surface:        light-dark(var(--art-c-paper-0),   var(--art-dk-page));
   --art-surface-raised: light-dark(var(--art-c-paper-50),  var(--art-dk-raised));
   --art-surface-sunken: light-dark(var(--art-c-paper-100), var(--art-dk-sunken));
+  /* An inert control's ground. It flips direction between themes, for the same
+     reason the accent does: on paper a disabled field reads as pressed INTO the
+     page, but on a dark ground "sunken" is nearly invisible (1.07:1 against the
+     page in the Catppuccin palette), so in dark it becomes a raised, filled
+     slab instead. Same job, opposite direction. */
+  --art-surface-disabled: light-dark(var(--art-c-paper-100), var(--art-dk-raised));
 
   /* Ink. Three steps, and the top one is genuinely blacker than body text —
      the reference sets display headlines in pure #000 against #181E2A body. */

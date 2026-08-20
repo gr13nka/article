@@ -133,6 +133,30 @@ for (const file of CONFIG.componentCss) {
 }
 
 // ---------------------------------------------------------------------------
+// 2b. Skill coverage. Check 2 passes if a class is named in ANY doc, so
+// STYLE.md alone can satisfy it while the authoring skill silently rots — which
+// is exactly what happened. The skill is the file an agent actually works from,
+// so when it is installed it must name every class itself. Skipped entirely for
+// a clone that has no skill.
+// ---------------------------------------------------------------------------
+if (skillMd) {
+  for (const file of CONFIG.componentCss) {
+    const css = read(file);
+    if (!css) continue;
+    for (const c of new Set([...css.matchAll(new RegExp(`\\.${P}-[a-z0-9_-]+`, 'g'))].map((m) => m[0].slice(1)))) {
+      if (!skillMd.includes(c)) warn('skill', `.${c} is defined in ${file} but not named in the article-style skill`);
+    }
+  }
+  for (const f of existsSync(join(ROOT, CONFIG.ornamentDir)) ? readdirSync(join(ROOT, CONFIG.ornamentDir)).filter((n) => n.endsWith('.svg')) : []) {
+    if (!skillMd.includes(f)) warn('skill', `${CONFIG.ornamentDir}/${f} is not named in the article-style skill`);
+  }
+  for (const role of ['display', 'body', 'mono']) {
+    const fam = decls.get(`--${P}-font-${role}`)?.match(/^'([^']+)'/)?.[1];
+    if (fam && !skillMd.includes(fam)) warn('skill', `"${fam}" (--${P}-font-${role}) is not named in the article-style skill`);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 3. Theme parity — the invariant that keeps two themes from drifting apart.
 // A semantic token that carries a colour must go through light-dark(), so its
 // two values live side by side on one line and cannot be edited independently.

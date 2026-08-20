@@ -64,7 +64,9 @@ const SHOTS = [
   { file: 'web-catppuccin.png', w: 1440, theme: 'dark', dark: 'catppuccin', from: '.art-bar', to: '.demo-hero' },
   { file: 'article-light.png',  w: 1440, theme: 'light', clip: '#article' },
   { file: 'index-light.png',    w: 1440, theme: 'light', clip: '#index' },
-  { file: 'gallery-light.png',  w: 1440, theme: 'light', clip: '#gallery' },
+  // The gallery is ~10,000px tall, so it is sampled rather than captured whole:
+  // 'sel@n' picks the nth match, and from/to clips the span between two of them.
+  { file: 'gallery-light.png',  w: 1440, theme: 'light', from: '.demo-group@1', to: '.demo-group@3' },
   { file: 'mobile-light.png',   w: 1440, theme: 'light', clip: '.demo-phones-strip' },
   { file: 'mobile-dark.png',    w: 1440, theme: 'dark',  clip: '.demo-phones-strip' },
 ];
@@ -160,7 +162,11 @@ async function main() {
         const st = document.createElement('style');
         st.textContent = ${JSON.stringify(HIDE_CHROME)};
         document.head.appendChild(st);
-        const q = (s) => document.querySelector(s);
+        const q = (s) => {
+          const at = s.lastIndexOf('@');
+          if (at === -1) return document.querySelector(s);
+          return document.querySelectorAll(s.slice(0, at))[Number(s.slice(at + 1))] ?? null;
+        };
         const a = q(${JSON.stringify(shot.from ?? shot.clip)});
         const b = ${shot.to ? `q(${JSON.stringify(shot.to)})` : 'a'};
         if (!a || !b) return null;

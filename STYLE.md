@@ -430,6 +430,7 @@ Every semantic token. These are the only names a component may use; the `--art-c
 | `--art-surface` | The page ground |
 | `--art-surface-raised` | A surface sitting above the page |
 | `--art-surface-sunken` | A recessed surface; code ground |
+| `--art-surface-disabled` | The ground of an inert control. Recessed in light, raised in dark — "sunken" is nearly invisible on a dark ground, so the role flips direction like the accent does |
 | `--art-ink-strong` | Display headlines only |
 | `--art-ink` | Body text |
 | `--art-ink-muted` | Captions, eyebrows, metadata, placeholders |

@@ -22,7 +22,9 @@ python3 -m http.server 8770
 ```
 
 Open <http://127.0.0.1:8770/demo/index.html>. That page is the whole system: a website,
-three phone screens, and every component. Use `http`, not `file://`.
+three phone screens, and every component in every state. Use `http`, not `file://`.
+
+Here's [the component gallery](docs/screenshots/gallery-light.png) if you'd rather just look.
 
 ## Use it
 
