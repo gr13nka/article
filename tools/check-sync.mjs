@@ -22,6 +22,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
+import { contrast as ratio, luminance } from './contrast.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -33,9 +34,9 @@ const CONFIG = {
   skillMd: process.env.ARTICLE_SKILL_MD ?? join(homedir(), '.claude/skills/article-style/SKILL.md'),
   tokens: 'web/tokens.css',
   componentCss: ['web/article.css', 'web/prose.css'],
-  docs: ['STYLE.md', 'THEMING.md', 'README.md'],
+  docs: ['STYLE.md', 'THEMING.md', 'README.md', 'FORK.md'],
   ornamentDir: 'ornaments',
-  demoPages: ['demo/index.html', 'demo/type.html', 'demo/theme.html', 'demo/dark.html'],
+  demoPages: ['demo/index.html', 'demo/type.html'],
   fontSurfaces: ['web/tokens.css', 'STYLE.md', 'README.md', 'demo/index.html'],
 };
 
@@ -198,16 +199,6 @@ for (const file of [CONFIG.tokens, ...CONFIG.componentCss, ...CONFIG.demoPages])
 // ---------------------------------------------------------------------------
 // 5. Contrast, in both themes.
 // ---------------------------------------------------------------------------
-const srgb = (c) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); };
-const luminance = (hex) => {
-  const n = parseInt(hex.slice(1), 16);
-  return 0.2126 * srgb((n >> 16) & 255) + 0.7152 * srgb((n >> 8) & 255) + 0.0722 * srgb(n & 255);
-};
-const ratio = (a, b) => {
-  const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (l1 + 0.05) / (l2 + 0.05);
-};
-
 // [ink, surface, minimum, label]. 3.0 marks a pair only ever used at large
 // display sizes, where AA allows the lower bar.
 const PAIRS = [

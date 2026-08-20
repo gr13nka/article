@@ -407,9 +407,11 @@ three knobs, that is a signal to revisit this document, not to special-case the 
   and never silently re-litigates a settled choice.
 - **Half-decided stays in the backlog.** An unsettled idea goes to `DECISIONS.md`'s
   "Unsettled" section, never into this file as a hedge. This document states what is true now.
-- **Subjective calls are staged, not argued.** Typography, the dark masthead, anything that
-  is a matter of taste: build a live comparison page, look at it, then decide. `demo/type.html`
-  and `demo/theme.html` are those pages.
+- **Subjective calls are staged, not argued.** Typography, a palette, anything that is a
+  matter of taste: build a live comparison page, look at it, then decide. `demo/type.html` is
+  the surviving example; the pages that settled the dark masthead and the dark palette were
+  deleted once their decisions were recorded in `DECISIONS.md`, which is where the reasoning
+  belongs — a comparison page is scaffolding, not a record.
 - **The sync map and amendment recipe live in the `article-style` skill**, not here.
 - **`tools/check-sync.mjs` is the gate.** Run it before every commit.
 

@@ -42,9 +42,13 @@ a README aimed at strangers. Keep it that way.
 | `web/theme.js` | Theme control + the no-flash snippet | light / dark / follow-the-system |
 | `ornaments/` | The marks | Geometric, mirror-symmetric, applied as masks |
 | `demo/index.html` | Showcase: editorial website + 3 phone screens, both themes | Serve over http, never file:// |
-| `demo/type.html` | Typography sampler | The by-eye chooser for the font pairing |
-| `demo/theme.html` | The page that settled the dark masthead | Witness page, not canon |
+| `demo/type.html` | Typography sampler | Compare candidate faces side by side |
+| `FORK.md` | The re-skin recipe for a user + LLM working from reference images | The file to hand someone forking the kit — self-contained, no need to read canon |
 | `tools/check-sync.mjs` | Drift checker + contrast gate | Run before every commit; exit 1 on drift |
+| `tools/contrast.mjs` | Shared WCAG maths + `liftToContrast` | One implementation, so a suggested colour and a checked colour cannot disagree |
+| `tools/palette-from-image.mjs` | Read a palette out of a reference PNG | Zero-dep PNG decode; `--box` to sample a region, `--roles` to map onto tokens |
+| `tools/shoot.mjs` | Regenerate the README screenshots | Run after any visible design change, or the pictures go stale |
+| `docs/screenshots/` | Committed PNGs the README renders | Generated — never hand-edit |
 
 ## How to work here
 
@@ -63,6 +67,12 @@ a README aimed at strangers. Keep it that way.
   Unsettled backlog, not into `STYLE.md` as hedges.
 - **Commits:** short imperative messages, no AI/Claude co-authorship or attribution
   trailers — ever (user's standing rule).
+- **After any visible design change**, run `node tools/shoot.mjs` so the README screenshots
+  still match the code. They are committed, so they are the one artefact that can go stale
+  without the checker noticing.
+- **Re-skinning from a reference image** is the kit's intended fork workflow: sample with
+  `node tools/palette-from-image.mjs ref.png --roles`, follow `FORK.md`, stop when
+  `node tools/check-sync.mjs --contrast` is green.
 
 ## The rules most likely to be broken by accident
 
