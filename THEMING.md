@@ -196,7 +196,7 @@ These are what make the result still look like one system rather than a pile of 
 ```sh
 node tools/check-sync.mjs             # drift + invariants
 node tools/check-sync.mjs --contrast  # the full WCAG table, both themes
-python3 -m http.server 8770           # then open demo/index.html — never file://
+python3 -m http.server 8770           # then open the preview at /demo/ — never file://
 ```
 
 The checker is report-only and never writes anything. It exits non-zero on a problem, so it

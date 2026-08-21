@@ -41,7 +41,8 @@ a README aimed at strangers. Keep it that way.
 | `web/prose.css` | Long-form layer — styles bare HTML under `.art-prose` | Separate so app UIs need not load it |
 | `web/theme.js` | Theme control + the no-flash snippet | light / dark / follow-the-system |
 | `ornaments/` | The marks | Geometric, mirror-symmetric, applied as masks |
-| `demo/index.html` | Showcase: editorial website + 3 phone screens, both themes | Serve over http, never file:// |
+| `index.html` | Root landing page, built with Article itself | What GitHub Pages serves at the site root; a consumer of the kit, it defines no `.art-*` class |
+| `demo/index.html` | The preview — editorial website + 3 phone screens + full gallery, both themes | Serve over http, never file:// |
 | `demo/type.html` | Typography sampler | Compare candidate faces side by side |
 | `FORK.md` | The re-skin recipe for a user + LLM working from reference images | The file to hand someone forking the kit — self-contained, no need to read canon |
 | `tools/check-sync.mjs` | Drift checker + contrast gate | Run before every commit; exit 1 on drift |
@@ -49,12 +50,15 @@ a README aimed at strangers. Keep it that way.
 | `tools/palette-from-image.mjs` | Read a palette out of a reference PNG | Zero-dep PNG decode; `--box` to sample a region, `--roles` to map onto tokens |
 | `tools/shoot.mjs` | Regenerate the README screenshots | Run after any visible design change, or the pictures go stale |
 | `docs/screenshots/` | Committed PNGs the README renders | Generated — never hand-edit |
+| `.github/workflows/pages.yml` | Publishes the repo to GitHub Pages | `path: '.'` works because there is no build step |
 
 ## How to work here
 
 - **Serving demos:** `python3 -m http.server 8770` from the repo root, then open
   `http://127.0.0.1:8770/demo/…`. `file://` breaks ES modules — never use it. Show visual
-  results to the user in Orca's embedded browser (`orca tab create --url …`).
+  results to the user in Orca's embedded browser (`orca tab create --url …`). The same pages
+  are published at <https://gr13nka.github.io/article/> — that link is what the README sends
+  strangers to, so a change that breaks it is a broken shop window.
 - **Choosing by eye:** subjective calls (typeface, the dark masthead) are settled by building
   a live comparison page and letting the user pick. This has already worked twice here.
   Don't pick aesthetics for the user; stage the choice.

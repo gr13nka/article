@@ -54,7 +54,9 @@ palette.
    `web/tokens.css`. Don't touch anything below them.
 2. Run the checker. Fix what it flags.
 3. Changed a font? Redo the drop cap maths — three lines, in `STYLE.md` §3.
-4. Open `demo/index.html` and look at it in both themes.
+4. Open the preview — `demo/index.html`, or
+   [the hosted one](https://gr13nka.github.io/article/demo/) — and look at it in both
+   themes.
 
 ## Don't break these
 

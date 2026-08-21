@@ -18,3 +18,11 @@ jobs:
         run: node tools/check-sync.mjs
       - name: Contrast, both themes
         run: node tools/check-sync.mjs --contrast
+      # --offline checks every local path and touches no network, so this can
+      # never go red because a font CDN rate-limited the runner. Local paths are
+      # where the risk actually is: a renamed screenshot or a moved doc.
+      - name: Doc links resolve
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress './**/*.md'
+          fail: true

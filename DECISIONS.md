@@ -311,3 +311,60 @@ author's explicit request, with the accessibility cost knowingly accepted. That 
 decision about the author's own apps. Article is meant to be used by other people, for their
 users, and its motion budget is a couple of 120–180ms fades — the guard costs essentially
 nothing here and its absence would be a defect shipped to strangers.
+
+### 2026-08-21
+
+#### The demo is hosted, and the site root is a page built with Article
+
+`.github/workflows/pages.yml` publishes the whole repo to GitHub Pages with `path: '.'`, and
+a new root `index.html` is what visitors land on.
+
+Publishing the repo as-is only works because the kit has no build step — the property Article
+advertises is what makes its own hosting a copy. The first-party
+`configure-pages` → `upload-pages-artifact` → `deploy-pages` chain was chosen over *deploy
+from a branch* for two reasons: the deployment is a reviewable file rather than a setting
+hidden in a dropdown, and the artifact is served without Jekyll, so no `.nojekyll` is needed.
+
+The root page is a real page rather than a redirect because the landing page should be
+evidence. It consumes the kit and defines no `.art-*` class of its own, so it adds nothing to
+canon and nothing to the class-coverage check.
+
+What drove it: the README could previously only be believed, not checked. Seeing the system
+required cloning the repo and running a Python server, which is a long way to ask a stranger
+to walk before the first impression.
+
+#### The README leads with the fork-with-an-agent loop, and carries no badges
+
+Rewritten around five steps — fork, look at the preview, apply it or re-skin it first, look
+again, keep the fork — with the slogan in the top slot and a nav row of text links where a
+badge row would normally sit.
+
+The kit's value is not that it is a stylesheet; it is that it is a house style you keep and
+re-apply, so your projects stop looking machine-made. The old README sold the stylesheet.
+
+No badges, because across the well-loved CSS and design-system READMEs the pattern is
+consistent — the better-regarded the repo, the fewer badges, and many ship none. A row of
+coloured pills would be the first design decision a visitor sees, and it would contradict
+the product. A nav row belongs to an editorial system in a way shields.io never will.
+
+#### Rejected: a `preview.html`, and most README tooling
+
+`preview.html` was asked for and not built. `demo/index.html` is pinned by this log, which is
+append-only, as well as by `check-sync.mjs`, `shoot.mjs`, `STYLE.md`, `FORK.md` and
+`THEMING.md`. Renaming it would strand permanently-stale paths in the one file that cannot be
+corrected. The showcase is therefore called "the preview" in prose, and the hosted link is the
+clickable version — the workflow is unchanged, only the filename differs.
+
+Also rejected, so they are not re-proposed: README generators (`readme-md-generator` has been
+dead since 2019 and reads a `package.json` this repo deliberately lacks; Best-README-Template
+produces the most recognisable generic README on GitHub, which is the failure mode the project
+exists to oppose); `markdownlint` (needs `npx` in CI, and would lint `STYLE.md` and
+`DECISIONS.md`, which are prose written to a house voice); `cog`/`markdown-magic` token tables
+(`check-sync.mjs` already guarantees that, without a Python dependency); Style Dictionary
+(consumes JSON and emits CSS — Article's source of truth runs the other way by design); and
+screenshot-diffing in CI (PNG output is not byte-reproducible across macOS and the Ubuntu
+runner, so it would fail on every contributor's first push).
+
+`lychee --offline` was adopted instead, as a step in the existing `check.yml`. It is a
+prebuilt action needing no repo-level dependency, and `--offline` checks local paths only, so
+it cannot go red because a CDN rate-limited a runner.

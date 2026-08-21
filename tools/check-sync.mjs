@@ -36,7 +36,7 @@ const CONFIG = {
   componentCss: ['web/article.css', 'web/prose.css'],
   docs: ['STYLE.md', 'THEMING.md', 'README.md', 'FORK.md'],
   ornamentDir: 'ornaments',
-  demoPages: ['demo/index.html', 'demo/type.html'],
+  demoPages: ['index.html', 'demo/index.html', 'demo/type.html'],
   fontSurfaces: ['web/tokens.css', 'STYLE.md', 'README.md', 'demo/index.html'],
 };
 
@@ -332,10 +332,16 @@ if (existsSync(ornDir) && docsText) {
 // Covers the component CSS too: a mask-image pointing at a missing ornament
 // fails silently — the mark simply does not paint — so it must be checked, not
 // trusted.
+//
+// The reference must start right after a quote or `(`, which is what keeps an
+// absolute URL out: `https://…` fails on the colon at the first character.
+// Anchoring there is also why a same-directory ref like `web/tokens.css` is
+// caught — the root landing page uses those, and a `../`-only pattern saw none
+// of them.
 for (const page of [...CONFIG.demoPages, ...CONFIG.componentCss]) {
   const text = read(page, { optional: true });
   if (!text) continue;
-  for (const m of new Set([...text.matchAll(/\.\.\/[\w./-]+\.(svg|css|js)/g)].map((x) => x[0]))) {
+  for (const m of new Set([...text.matchAll(/(?<=[\"'(])(?:\.{0,2}\/)?[\w.-]+(?:\/[\w.-]+)*\.(?:svg|css|js)/g)].map((x) => x[0]))) {
     if (!existsSync(join(ROOT, dirname(page), m))) warn('assets', `${page} references ${m}, which does not exist`);
   }
 }

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Article — a design language for software that is mostly words</title>
+<meta name="description" content="A formal, editorial design system for text-heavy software. Plain CSS, light and dark, no build step. Fork it and make it yours.">
+
+<!--
+  Two no-flash snippets, inline and BEFORE any stylesheet — same contract as
+  demo/index.html. A module import resolves after the first paint, so by the
+  time it runs the flash has already happened.
+-->
+<script>(function(){try{var m=localStorage.getItem('art-theme');if(m==='light'||m==='dark')document.documentElement.setAttribute('data-theme',m);}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('art-demo-dark')==='catppuccin')document.documentElement.setAttribute('data-dark','catppuccin');}catch(e){}})();</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..700&amp;family=Vollkorn:ital,wght@0,400..900;1,400..700&amp;display=swap">
+
+<link rel="stylesheet" href="web/tokens.css">
+<link rel="stylesheet" href="web/article.css">
+
+<style>
+/* ==========================================================================
+   index.html — PAGE-LOCAL SCAFFOLDING ONLY.
+
+   Same three rules that govern demo/index.html's style block:
+
+     1. Every class defined here is prefixed `site-`. No `.art-` class is
+        invented and none is restyled; where a selector below mentions one it
+        is only to seat a kit component on this page's own grid.
+     2. Colour arrives exclusively through layer-2 semantic tokens: no
+        primitive, no hex, no rgba(). There is not one colour value in this
+        file.
+     3. No box-shadow, and no radius except var(--art-radius).
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+
+.site-page {
+  max-width: var(--art-measure);
+  margin-inline: auto;
+  padding: var(--art-space-9) var(--art-space-5) var(--art-space-7);
+  text-align: center;
+}
+
+/* The one heading on the page, so its size is set here rather than borrowed
+   from prose.css — which this page does not load, having no long-form text. */
+.site-title {
+  max-width: 16ch;
+  margin: 0 auto var(--art-space-5);
+  font-family: var(--art-font-display);
+  font-weight: var(--art-weight-display);
+  font-size: clamp(var(--art-text-3xl), 6.2vw, var(--art-text-5xl));
+  line-height: var(--art-leading-heading);
+  color: var(--art-ink-strong);
+  text-wrap: balance;
+}
+
+/* .art-btn is written for <button>; these are links, so the underline the
+   anchor arrives with has to come back off. */
+.site-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--art-space-3);
+  margin-top: var(--art-space-6);
+}
+
+.site-actions .art-btn { text-decoration: none; }
+
+/* A <button> in the masthead nav, styled as one of its links. */
+.site-chip {
+  font-family: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.site-chip[aria-pressed="true"] {
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+}
+
+.site-mark {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  mask: url('ornaments/arrow-right.svg') no-repeat center / contain;
+  -webkit-mask: url('ornaments/arrow-right.svg') no-repeat center / contain;
+}
+
+.site-foot {
+  margin: 0;
+  font-size: var(--art-text-sm);
+  color: var(--art-ink-muted);
+}
+</style>
+</head>
+<body>
+
+<header class="art-bar">
+  <a class="art-bar__mark" href="./">Article</a>
+  <nav class="art-bar__nav" aria-label="Theme">
+    <button class="art-bar__link site-chip" type="button" data-theme-mode="system" aria-pressed="false">System</button>
+    <button class="art-bar__link site-chip" type="button" data-theme-mode="light"  aria-pressed="false">Light</button>
+    <button class="art-bar__link site-chip" type="button" data-theme-mode="dark"   aria-pressed="false">Dark</button>
+  </nav>
+</header>
+
+<main class="site-page">
+  <p class="art-eyebrow">A design language for software that is mostly words</p>
+  <h1 class="site-title">Eliminate slop design.</h1>
+  <p class="art-lede">Article is a formal, editorial kit for docs, dev tools, dashboards and reading apps &mdash; a well-set page rather than an app. Fork it, hand it to your agent, and every project you build looks like yours.</p>
+
+  <hr class="art-rule">
+
+  <nav class="site-actions" aria-label="Pages">
+    <a class="art-btn art-btn--primary" href="demo/">The showcase <span class="site-mark" aria-hidden="true"></span></a>
+    <a class="art-btn art-btn--outline" href="demo/type.html">Typography</a>
+    <a class="art-btn art-btn--outline" href="https://github.com/gr13nka/article">Source</a>
+  </nav>
+
+  <div class="art-fleuron" aria-hidden="true"></div>
+
+  <p class="site-foot">MIT. Both themes are first class. No build step.</p>
+</main>
+
+<script type="module">
+import { initTheme } from './web/theme.js';
+
+const theme = initTheme({
+  onChange: (mode) => {
+    for (const b of document.querySelectorAll('[data-theme-mode]')) {
+      b.setAttribute('aria-pressed', String(b.dataset.themeMode === mode));
+    }
+  },
+});
+
+for (const b of document.querySelectorAll('[data-theme-mode]')) {
+  b.addEventListener('click', () => theme.set(b.dataset.themeMode));
+}
+</script>
+
+</body>
+</html>
