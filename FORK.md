@@ -57,6 +57,11 @@ palette.
 4. Open the preview — `demo/index.html`, or
    [the hosted one](https://gr13nka.github.io/article/demo/) — and look at it in both
    themes.
+5. Then open `demo/gallery.html`
+   ([hosted](https://gr13nka.github.io/article/demo/gallery.html)) and look at that in both
+   themes too. It shows every component in every state side by side, which is where a new
+   palette gives itself away — a disabled field, a hover fill or a focus ring that reads fine
+   alone reads wrong next to its neighbours.
 
 ## Don't break these
 

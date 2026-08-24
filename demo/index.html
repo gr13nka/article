@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Compositor — the Article design system, in situ</title>
-<meta name="description" content="A whole publication, an app, and every component of the Article design system on one page, in two themes and both of its dark palettes.">
+<meta name="description" content="The Article design system in use: three phone screens, then a whole publication, in two themes and both of its dark palettes.">
 
 <!--
   Two no-flash snippets, inline and BEFORE any stylesheet. A module import
@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="../web/tokens.css">
 <link rel="stylesheet" href="../web/article.css">
 <link rel="stylesheet" href="../web/prose.css">
+
 
 <style>
 /* ==========================================================================
@@ -147,34 +148,6 @@ svg, img { max-width: 100%; }
   color: var(--art-ink-muted);
 }
 
-/* --------------------------------------------------------------------------
-   SHOWCASE CHROME — the numbered marker above each section.
-
-   Set in the mono face and the muted ink on purpose: the page's own furniture
-   has to be legible as NOT part of the publication it is presenting.
-   -------------------------------------------------------------------------- */
-.demo-marker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--art-space-2) var(--art-space-4);
-  padding-block: var(--art-space-5) var(--art-space-3);
-  border-top: var(--art-rule-width) solid var(--art-rule);
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-xs);
-  line-height: var(--art-leading-body);
-  color: var(--art-ink-muted);
-}
-
-.demo-marker__num { color: var(--art-accent); }
-
-.demo-marker__name {
-  color: var(--art-ink);
-  text-transform: uppercase;
-  letter-spacing: var(--art-tracking-eyebrow);
-}
-
-.demo-marker__note { margin-left: auto; }
 
 /* --------------------------------------------------------------------------
    HERO
@@ -247,6 +220,7 @@ svg, img { max-width: 100%; }
 
 .demo-index__label { margin-bottom: var(--art-space-5); }
 
+
 /* --------------------------------------------------------------------------
    PHONE FRAMES
 
@@ -269,13 +243,7 @@ svg, img { max-width: 100%; }
   padding-bottom: var(--art-space-4);
 }
 
-.demo-phone-fig {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--art-space-3);
-  margin: 0;
-}
+.demo-phone-fig { flex: none; }
 
 .demo-phone {
   display: flex;
@@ -302,177 +270,9 @@ svg, img { max-width: 100%; }
   padding: var(--art-space-5) var(--art-space-4) var(--art-space-8);
 }
 
-.demo-phone__caption {
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-xs);
-  color: var(--art-ink-muted);
-}
 
-/* --------------------------------------------------------------------------
-   GALLERY
-
-   The gallery is the page's regression surface: one spec per component, every
-   state of that component side by side inside it, and the class name of each
-   specimen set in .art-code so it can be copied out.
-   -------------------------------------------------------------------------- */
-.demo-specs { display: grid; gap: var(--art-space-7); }
-.demo-spec { display: grid; gap: var(--art-space-4); }
-
-/* The heading above a run of specs. Set in the display face so the gallery's
-   own structure reads as editorial rather than as a form, and taking
-   --art-weight-display for the same reason every other display heading does. */
-.demo-group {
-  margin: 0;
-  padding-top: var(--art-space-6);
-  border-top: var(--art-rule-width) solid var(--art-rule-strong);
-  font-family: var(--art-font-display);
-  font-size: var(--art-text-2xl);
-  font-weight: var(--art-weight-display);
-  line-height: var(--art-leading-heading);
-  color: var(--art-ink-strong);
-}
-
-/* --art-text-sm rather than --art-text-xs: the label now carries .art-code
-   chips, which are 0.88em, and at the smaller step they land under 12px. */
-.demo-spec__label {
-  padding-bottom: var(--art-space-2);
-  border-bottom: var(--art-rule-width) solid var(--art-rule);
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-sm);
-  line-height: var(--art-leading-body);
-  color: var(--art-ink);
-  overflow-wrap: anywhere;
-}
-
-.demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--art-space-4);
-}
-
-.demo-cols {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--art-space-6);
-}
-
+/* Shared with demo/gallery.html — keep the two copies identical. */
 .demo-stack { display: grid; gap: var(--art-space-5); }
-
-/* One state of one component, with the name of that state under it. Every
-   state of a component sits in one grid, at one size, so a change that reaches
-   only one of them has nowhere to hide. */
-.demo-states {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: var(--art-space-5);
-  align-items: start;
-}
-
-.demo-state { display: grid; gap: var(--art-space-2); min-width: 0; }
-.demo-state > * { max-width: 100%; }
-
-.demo-state__name {
-  margin: 0;
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-sm);
-  color: var(--art-ink-muted);
-  overflow-wrap: anywhere;
-}
-
-/* --------------------------------------------------------------------------
-   PAINTED STATES
-
-   :hover and :focus-visible need a pointer or a tab stop. A gallery that only
-   showed them live would render three of a button's four states as the same
-   picture, so these classes restate the kit's own state declarations -- from
-   the same semantic tokens, once each -- onto a static specimen.
-
-   This is the ONE place on the page that bends rule 1 above, and the bend is
-   contained: the copy is never the authority. Every painted specimen sits
-   beside a live one, and the kit's real :hover rule is three classes deep
-   against these one-class rules, so hovering a painted specimen and seeing it
-   change is itself the signal that the paint has gone stale.
-   -------------------------------------------------------------------------- */
-.demo-hovered--primary   { background-color: var(--art-action-ink);     color: var(--art-action); }
-.demo-hovered--secondary { background-color: var(--art-accent-ink);     color: var(--art-accent-strong); }
-.demo-hovered--outline   { background-color: var(--art-ink);            color: var(--art-surface); }
-.demo-hovered--ghost     { background-color: var(--art-surface-raised); }
-
-/* The focus contract, article.css §0. */
-.demo-focused { outline: 2px solid var(--art-focus); outline-offset: 2px; }
-
-/* A field also darkens its edge on focus; a button does not. */
-.demo-focused-field { border-color: var(--art-ink); }
-
-/* Mobile chrome at the width it is specified for, without the 844px-tall
-   frame the phone screens above need in order to be phones. */
-.demo-chrome {
-  width: 100%;
-  max-width: 390px;
-  background-color: var(--art-surface);
-  border: var(--art-rule-width) solid var(--art-rule-strong);
-  border-radius: var(--art-radius);
-}
-
-.demo-chrome__body { padding: var(--art-space-4); }
-
-/* --------------------------------------------------------------------------
-   ORNAMENT SHEET
-
-   Every file in ornaments/, painted the way the kit paints one: a box filled
-   with currentColor and cut to shape by the SVG. The file is named per
-   instance in a custom property, so this is one rule rather than nine, and a
-   file that is missing or malformed leaves a visibly empty cell.
-   -------------------------------------------------------------------------- */
-.demo-orns {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--art-space-4);
-}
-
-.demo-orn {
-  display: grid;
-  gap: var(--art-space-3);
-  align-content: start;
-  justify-items: center;
-  padding: var(--art-space-4);
-  background-color: var(--art-surface-sunken);
-  border: var(--art-rule-width) solid var(--art-rule);
-  border-radius: var(--art-radius);
-}
-
-/* The two dividers are 10:1 and 5:1; a 180px cell would shrink them to a
-   smudge, so they take a whole row and mask-size: contain does the rest. */
-.demo-orn--wide { grid-column: 1 / -1; }
-
-.demo-orn__mark {
-  display: block;
-  width: 100%;
-  height: var(--art-space-6);
-  color: var(--art-ink);
-  background-color: currentColor;
-  mask-image: var(--demo-orn);
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  -webkit-mask-image: var(--demo-orn);
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-}
-
-.demo-orn__name {
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-xs);
-  color: var(--art-ink-muted);
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
-/* Long-form prose and a reading-width specimen obey the measure. */
-.demo-measure { max-width: var(--art-measure); }
-
 .demo-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .demo-fieldset legend { padding: 0; margin-bottom: var(--art-space-3); }
 
@@ -485,74 +285,26 @@ svg, img { max-width: 100%; }
   color: var(--art-ink-muted);
 }
 
-/* .art-table styles the header row but not <caption>, which the UA centres. */
-.demo-caption {
-  padding-bottom: var(--art-space-3);
-  text-align: left;
+/* Furniture links — the colophon's row out to the rest of the kit. Nothing
+   outside .art-prose styles a bare <a>, and the component layer has no link
+   role, so a link that is page furniture rather than prose is styled here. */
+.demo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--art-space-2) var(--art-space-5);
+  margin-top: var(--art-space-5);
   font-family: var(--art-font-mono);
   font-size: var(--art-text-xs);
-  color: var(--art-ink-muted);
 }
 
-/* Anything that can outgrow a 390px screen scrolls inside its own box. */
-.demo-scroll { overflow-x: auto; }
-
-/* --------------------------------------------------------------------------
-   SPECIMEN
-   -------------------------------------------------------------------------- */
-.demo-scale { display: grid; gap: var(--art-space-5); }
-
-.demo-scale-row {
-  display: grid;
-  grid-template-columns: 16ch 1fr;
-  gap: var(--art-space-5);
-  align-items: baseline;
+.demo-links a {
+  color: var(--art-link);
+  text-decoration: underline;
+  text-decoration-thickness: var(--art-rule-width);
+  text-underline-offset: 0.18em;
 }
 
-.demo-scale__label {
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-xs);
-  color: var(--art-ink-muted);
-}
-
-.demo-scale__sample {
-  min-width: 0;
-  overflow-x: auto;
-  white-space: nowrap;
-  line-height: var(--art-leading-heading);
-  color: var(--art-ink-strong);
-}
-
-.demo-scale__sample--display {
-  font-family: var(--art-font-display);
-  font-weight: var(--art-weight-display);
-}
-
-.demo-scale__sample--body { font-family: var(--art-font-body); }
-
-.demo-swatches {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-  gap: var(--art-space-4);
-}
-
-.demo-swatch { display: grid; gap: var(--art-space-2); }
-
-/* --demo-swatch is set per instance to a semantic role, so every chip
-   re-resolves when the theme flips and none of them is a literal colour. */
-.demo-swatch__chip {
-  height: var(--art-space-8);
-  background-color: var(--demo-swatch);
-  border: var(--art-rule-width) solid var(--art-rule);
-  border-radius: var(--art-radius);
-}
-
-.demo-swatch__name {
-  font-family: var(--art-font-mono);
-  font-size: var(--art-text-xs);
-  color: var(--art-ink-muted);
-  overflow-wrap: anywhere;
-}
+.demo-links a:hover { text-decoration-thickness: calc(var(--art-rule-width) * 2); }
 
 /* --------------------------------------------------------------------------
    FOOT
@@ -563,13 +315,10 @@ svg, img { max-width: 100%; }
   border-top: var(--art-rule-width) solid var(--art-rule);
 }
 
+
 /* --------------------------------------------------------------------------
    RESPONSIVE
    -------------------------------------------------------------------------- */
-@media (max-width: 900px) {
-  .demo-scale-row { grid-template-columns: 1fr; gap: var(--art-space-2); }
-}
-
 @media (max-width: 700px) {
   /* Even two groups wrap on a 390px screen, and a pinned strip there costs a
      real slice of the viewport, so on phones it scrolls away. */
@@ -604,36 +353,221 @@ svg, img { max-width: 100%; }
   </div>
 </div>
 
-<div class="demo-shell demo-marker">
-  <span class="demo-marker__num">01</span>
-  <span class="demo-marker__name">Masthead</span>
-  <span class="demo-marker__note">.art-bar &middot; full bleed</span>
-</div>
-
-<!-- ======================================================================
-     01 — MASTHEAD
-     ====================================================================== -->
-<header class="art-bar demo-bar">
-  <a class="art-bar__mark" href="#">The Compositor</a>
-  <nav class="art-bar__nav" aria-label="Sections">
-    <a class="art-bar__link" href="#article">Essays</a>
-    <a class="art-bar__link" href="#index">Editors</a>
-    <a class="art-bar__link" href="#specimen">Typography</a>
-    <a class="art-bar__link" href="#index">Archive</a>
-    <a class="art-bar__link" href="#colophon">Colophon</a>
-  </nav>
-</header>
-
 <main>
 
   <!-- ====================================================================
-       02 — HERO
+       THE APP — three screens at 390 x 844, scrolling in their own frames.
        ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">02</span>
-    <span class="demo-marker__name">Hero</span>
-    <span class="demo-marker__note">.art-eyebrow &middot; .art-lede &middot; .art-rule &middot; .art-btn</span>
-  </div>
+  <section class="demo-section demo-phones-strip" aria-label="Phone screens">
+    <div class="demo-phones">
+
+      <!-- ---------------- Library ---------------- -->
+      <div class="demo-phone-fig">
+        <div class="demo-phone">
+          <header class="art-appbar">
+            <div class="art-appbar__lead">
+              <button class="art-appbar__action" type="button">Filter</button>
+            </div>
+            <h2 class="art-appbar__title">Library</h2>
+            <div class="art-appbar__trail">
+              <button class="art-appbar__action" type="button">Search</button>
+            </div>
+          </header>
+
+          <div class="demo-phone__screen">
+            <ul class="art-list">
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">Reading Is the Feature</span>
+                <span class="art-list-row__meta">11 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">The Undo Tree</span>
+                <span class="art-list-row__meta">9 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">Against Syntax Colour</span>
+                <span class="art-list-row__meta">7 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#" lang="zh-Hans">
+                <span class="art-list-row__title">字体栈的顺序</span>
+                <span class="art-list-row__meta">6 分钟</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">A Keyboard, Fitted</span>
+                <span class="art-list-row__meta">12 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">Setting Code in Prose</span>
+                <span class="art-list-row__meta">5 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">The Margin Is Not Waste</span>
+                <span class="art-list-row__meta">8 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+              <li><a class="art-list-row" href="#">
+                <span class="art-list-row__title">Three Notes on Leading</span>
+                <span class="art-list-row__meta">4 min</span>
+                <span class="art-list-row__chevron" aria-hidden="true"></span>
+              </a></li>
+            </ul>
+          </div>
+
+          <nav class="art-tabbar" aria-label="Library sections">
+            <a class="art-tabbar__item is-active" href="#" aria-current="page"><span class="art-tabbar__label">Library</span></a>
+            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Reading</span></a>
+            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Settings</span></a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- ---------------- Reading ---------------- -->
+      <div class="demo-phone-fig">
+        <div class="demo-phone">
+          <header class="art-appbar">
+            <div class="art-appbar__lead">
+              <button class="art-appbar__action" type="button">Back</button>
+            </div>
+            <h2 class="art-appbar__title">Essay</h2>
+            <div class="art-appbar__trail">
+              <button class="art-appbar__action" type="button">Aa</button>
+            </div>
+          </header>
+
+          <div class="demo-phone__screen demo-phone__screen--read">
+            <article class="art-prose">
+              <p class="art-eyebrow">Issue Eleven</p>
+              <h1>Reading in Public</h1>
+              <p><small>By Nadia Vance &middot; 8 minutes</small></p>
+
+              <p><span class="art-dropcap">T</span>he phone is where most reading now happens, and it is the surface an editorial system is most often designed away from. A column that was chosen on a laptop arrives here as a stack of four-word lines, and every rule that looked restrained at full width turns into a ladder.</p>
+
+              <p>The fix is not a smaller type size. It is fewer things: one measure, one rule per boundary, and enough margin that the text does not touch the aluminium. Everything else is the same page it was.</p>
+
+              <h2>What Survives the Narrow Screen</h2>
+
+              <p>Hairlines survive, because they are a pixel wide at any density. Space survives, because it scales. The drop cap survives if it is derived from the metrics of the faces actually in use rather than pinned to a number that was right once.</p>
+
+              <blockquote>
+                <p>A design that only works at one width is not a design. It is a screenshot.</p>
+              </blockquote>
+
+              <p>What does not survive is decoration that was carrying structure. If a shadow was the only thing separating two regions, the narrow screen will tell you so within a paragraph.</p>
+
+              <hr>
+
+              <p>Read on a train, at arm's length, at six in the morning: that is the real test, and no specimen sheet has ever passed it on a system's behalf.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------------- Settings ---------------- -->
+      <div class="demo-phone-fig">
+        <div class="demo-phone">
+          <header class="art-appbar">
+            <div class="art-appbar__lead">
+              <button class="art-appbar__action" type="button">Back</button>
+            </div>
+            <h2 class="art-appbar__title">Settings</h2>
+            <div class="art-appbar__trail">
+              <button class="art-appbar__action" type="button">Help</button>
+            </div>
+          </header>
+
+          <div class="demo-phone__screen">
+            <form class="demo-stack" action="#" novalidate>
+              <div class="art-field">
+                <label class="art-label" for="app-name">Display name</label>
+                <input class="art-input" id="app-name" name="name" type="text" value="n.vance" autocomplete="off">
+                <span class="art-hint">Shown beside your marginal notes.</span>
+              </div>
+
+              <div class="art-field">
+                <label class="art-label" for="app-theme">Reading theme</label>
+                <span class="art-select-wrap">
+                  <select class="art-select" id="app-theme" name="theme">
+                    <option>Follow the system</option>
+                    <option>Paper, always</option>
+                    <option>Mocha, always</option>
+                  </select>
+                </span>
+              </div>
+
+              <div class="art-field">
+                <span class="art-label" id="app-reading-label">While reading</span>
+                <label class="art-choice">
+                  <input class="art-check" type="checkbox" checked>
+                  <span>Hyphenate paragraphs</span>
+                </label>
+                <label class="art-choice">
+                  <input class="art-check" type="checkbox">
+                  <span>Show estimated reading time</span>
+                </label>
+              </div>
+
+              <fieldset class="demo-fieldset">
+                <legend class="art-label">Measure</legend>
+                <div class="demo-stack">
+                  <label class="art-choice">
+                    <input class="art-radio" type="radio" name="measure" value="narrow">
+                    <span>Narrow &mdash; 44 characters</span>
+                  </label>
+                  <label class="art-choice">
+                    <input class="art-radio" type="radio" name="measure" value="standard" checked>
+                    <span>Standard &mdash; 68 characters</span>
+                  </label>
+                  <label class="art-choice">
+                    <input class="art-radio" type="radio" name="measure" value="wide">
+                    <span>Wide &mdash; 80 characters</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <label class="art-choice">
+                <input class="art-toggle" type="checkbox" checked>
+                <span>Sync reading position across devices</span>
+              </label>
+
+              <button class="art-btn art-btn--primary" type="button">Save preferences</button>
+            </form>
+          </div>
+
+          <nav class="art-tabbar" aria-label="App sections">
+            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Library</span></a>
+            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Reading</span></a>
+            <a class="art-tabbar__item is-active" href="#" aria-current="page"><span class="art-tabbar__label">Settings</span></a>
+          </nav>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       THE PUBLICATION — masthead, the issue opener, the lead essay, and the
+       archive index below it. One continuous page, as a reader would meet it.
+
+       The masthead has to sit directly above #article once .demo-hero is
+       hidden: tools/shoot.mjs composes the README's picture out of exactly
+       that pair, and nothing warns you when the framing changes.
+       ==================================================================== -->
+  <header class="art-bar demo-bar">
+    <a class="art-bar__mark" href="#">The Compositor</a>
+    <nav class="art-bar__nav" aria-label="Sections">
+      <a class="art-bar__link" href="#article">Essays</a>
+      <a class="art-bar__link" href="#index">Editors</a>
+      <a class="art-bar__link" href="#">Typography</a>
+      <a class="art-bar__link" href="#index">Archive</a>
+      <a class="art-bar__link" href="#colophon">Colophon</a>
+    </nav>
+  </header>
 
   <section class="demo-shell demo-hero" aria-label="Issue opener">
     <p class="art-eyebrow demo-hero__eyebrow">Issue Eleven &middot; Autumn</p>
@@ -645,15 +579,6 @@ svg, img { max-width: 100%; }
       <button class="art-btn art-btn--secondary" type="button">Subscribe</button>
     </div>
   </section>
-
-  <!-- ====================================================================
-       03 — AN ARTICLE PAGE
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">03</span>
-    <span class="demo-marker__name">An article page</span>
-    <span class="demo-marker__note">.art-prose &middot; .art-dropcap &middot; .art-pre &middot; .art-figure</span>
-  </div>
 
   <div class="demo-shell demo-section" id="article">
     <article class="art-prose demo-column">
@@ -739,26 +664,8 @@ svg, img { max-width: 100%; }
     </article>
   </div>
 
-  <!-- ====================================================================
-       04 — FLEURON
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">04</span>
-    <span class="demo-marker__name">Divider</span>
-    <span class="demo-marker__note">.art-fleuron &middot; ornaments/fleuron.svg</span>
-  </div>
-
   <div class="demo-shell">
     <div class="art-fleuron" aria-hidden="true"></div>
-  </div>
-
-  <!-- ====================================================================
-       05 — THE INDEX
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">05</span>
-    <span class="demo-marker__name">The article index</span>
-    <span class="demo-marker__note">.art-entry &middot; .art-entry--reverse</span>
   </div>
 
   <section class="demo-shell demo-section" id="index" aria-labelledby="demo-index-heading">
@@ -851,822 +758,16 @@ svg, img { max-width: 100%; }
     </article>
   </section>
 
-  <!-- ====================================================================
-       06 — THE APP
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">06</span>
-    <span class="demo-marker__name">The app</span>
-    <span class="demo-marker__note">.art-appbar &middot; .art-list &middot; .art-tabbar &middot; 390 &times; 844</span>
-  </div>
-
-  <section class="demo-section demo-phones-strip" aria-label="Phone screens">
-    <div class="demo-phones">
-
-      <!-- ---------------- Library ---------------- -->
-      <figure class="demo-phone-fig">
-        <div class="demo-phone">
-          <header class="art-appbar">
-            <div class="art-appbar__lead">
-              <button class="art-appbar__action" type="button">Filter</button>
-            </div>
-            <h2 class="art-appbar__title">Library</h2>
-            <div class="art-appbar__trail">
-              <button class="art-appbar__action" type="button">Search</button>
-            </div>
-          </header>
-
-          <div class="demo-phone__screen">
-            <ul class="art-list">
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">Reading Is the Feature</span>
-                <span class="art-list-row__meta">11 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">The Undo Tree</span>
-                <span class="art-list-row__meta">9 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">Against Syntax Colour</span>
-                <span class="art-list-row__meta">7 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#" lang="zh-Hans">
-                <span class="art-list-row__title">字体栈的顺序</span>
-                <span class="art-list-row__meta">6 分钟</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">A Keyboard, Fitted</span>
-                <span class="art-list-row__meta">12 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">Setting Code in Prose</span>
-                <span class="art-list-row__meta">5 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">The Margin Is Not Waste</span>
-                <span class="art-list-row__meta">8 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-              <li><a class="art-list-row" href="#">
-                <span class="art-list-row__title">Three Notes on Leading</span>
-                <span class="art-list-row__meta">4 min</span>
-                <span class="art-list-row__chevron" aria-hidden="true"></span>
-              </a></li>
-            </ul>
-          </div>
-
-          <nav class="art-tabbar" aria-label="Library sections">
-            <a class="art-tabbar__item is-active" href="#" aria-current="page"><span class="art-tabbar__label">Library</span></a>
-            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Reading</span></a>
-            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Settings</span></a>
-          </nav>
-        </div>
-        <figcaption class="demo-phone__caption">Library &middot; .art-list &middot; .art-tabbar</figcaption>
-      </figure>
-
-      <!-- ---------------- Reading ---------------- -->
-      <figure class="demo-phone-fig">
-        <div class="demo-phone">
-          <header class="art-appbar">
-            <div class="art-appbar__lead">
-              <button class="art-appbar__action" type="button">Back</button>
-            </div>
-            <h2 class="art-appbar__title">Essay</h2>
-            <div class="art-appbar__trail">
-              <button class="art-appbar__action" type="button">Aa</button>
-            </div>
-          </header>
-
-          <div class="demo-phone__screen demo-phone__screen--read">
-            <article class="art-prose">
-              <p class="art-eyebrow">Issue Eleven</p>
-              <h1>Reading in Public</h1>
-              <p><small>By Nadia Vance &middot; 8 minutes</small></p>
-
-              <p><span class="art-dropcap">T</span>he phone is where most reading now happens, and it is the surface an editorial system is most often designed away from. A column that was chosen on a laptop arrives here as a stack of four-word lines, and every rule that looked restrained at full width turns into a ladder.</p>
-
-              <p>The fix is not a smaller type size. It is fewer things: one measure, one rule per boundary, and enough margin that the text does not touch the aluminium. Everything else is the same page it was.</p>
-
-              <h2>What Survives the Narrow Screen</h2>
-
-              <p>Hairlines survive, because they are a pixel wide at any density. Space survives, because it scales. The drop cap survives if it is derived from the metrics of the faces actually in use rather than pinned to a number that was right once.</p>
-
-              <blockquote>
-                <p>A design that only works at one width is not a design. It is a screenshot.</p>
-              </blockquote>
-
-              <p>What does not survive is decoration that was carrying structure. If a shadow was the only thing separating two regions, the narrow screen will tell you so within a paragraph.</p>
-
-              <hr>
-
-              <p>Read on a train, at arm's length, at six in the morning: that is the real test, and no specimen sheet has ever passed it on a system's behalf.</p>
-            </article>
-          </div>
-        </div>
-        <figcaption class="demo-phone__caption">Reading &middot; .art-prose, scrolling in the frame</figcaption>
-      </figure>
-
-      <!-- ---------------- Settings ---------------- -->
-      <figure class="demo-phone-fig">
-        <div class="demo-phone">
-          <header class="art-appbar">
-            <div class="art-appbar__lead">
-              <button class="art-appbar__action" type="button">Back</button>
-            </div>
-            <h2 class="art-appbar__title">Settings</h2>
-            <div class="art-appbar__trail">
-              <button class="art-appbar__action" type="button">Help</button>
-            </div>
-          </header>
-
-          <div class="demo-phone__screen">
-            <form class="demo-stack" action="#" novalidate>
-              <div class="art-field">
-                <label class="art-label" for="app-name">Display name</label>
-                <input class="art-input" id="app-name" name="name" type="text" value="n.vance" autocomplete="off">
-                <span class="art-hint">Shown beside your marginal notes.</span>
-              </div>
-
-              <div class="art-field">
-                <label class="art-label" for="app-theme">Reading theme</label>
-                <span class="art-select-wrap">
-                  <select class="art-select" id="app-theme" name="theme">
-                    <option>Follow the system</option>
-                    <option>Paper, always</option>
-                    <option>Mocha, always</option>
-                  </select>
-                </span>
-              </div>
-
-              <div class="art-field">
-                <span class="art-label" id="app-reading-label">While reading</span>
-                <label class="art-choice">
-                  <input class="art-check" type="checkbox" checked>
-                  <span>Hyphenate paragraphs</span>
-                </label>
-                <label class="art-choice">
-                  <input class="art-check" type="checkbox">
-                  <span>Show estimated reading time</span>
-                </label>
-              </div>
-
-              <fieldset class="demo-fieldset">
-                <legend class="art-label">Measure</legend>
-                <div class="demo-stack">
-                  <label class="art-choice">
-                    <input class="art-radio" type="radio" name="measure" value="narrow">
-                    <span>Narrow &mdash; 44 characters</span>
-                  </label>
-                  <label class="art-choice">
-                    <input class="art-radio" type="radio" name="measure" value="standard" checked>
-                    <span>Standard &mdash; 68 characters</span>
-                  </label>
-                  <label class="art-choice">
-                    <input class="art-radio" type="radio" name="measure" value="wide">
-                    <span>Wide &mdash; 80 characters</span>
-                  </label>
-                </div>
-              </fieldset>
-
-              <label class="art-choice">
-                <input class="art-toggle" type="checkbox" checked>
-                <span>Sync reading position across devices</span>
-              </label>
-
-              <button class="art-btn art-btn--primary" type="button">Save preferences</button>
-            </form>
-          </div>
-
-          <nav class="art-tabbar" aria-label="App sections">
-            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Library</span></a>
-            <a class="art-tabbar__item" href="#"><span class="art-tabbar__label">Reading</span></a>
-            <a class="art-tabbar__item is-active" href="#" aria-current="page"><span class="art-tabbar__label">Settings</span></a>
-          </nav>
-        </div>
-        <figcaption class="demo-phone__caption">Settings &middot; .art-field &middot; .art-check &middot; .art-toggle</figcaption>
-      </figure>
-
-    </div>
-  </section>
-
-  <!-- ====================================================================
-       07 — COMPONENT GALLERY
-
-       The regression surface. Every class web/article.css defines appears
-       here at least once, and every state it can be in appears beside its
-       neighbours, so a change to the component layer either leaves this
-       section alone or is visible in it.
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">07</span>
-    <span class="demo-marker__name">Component gallery</span>
-    <span class="demo-marker__note">every class in web/article.css, in every state</span>
-  </div>
-
-  <section class="demo-shell demo-section demo-specs" id="gallery" aria-label="Component gallery">
-
-    <p class="demo-note">Every specimen below is labelled with the class it demonstrates. States that need a pointer or a tab stop &mdash; <code class="art-code">:hover</code> and <code class="art-code">:focus-visible</code> &mdash; are shown twice: live on the rest specimen, and painted onto a static one with a <code class="art-code">demo-</code> class, because a gallery that only showed them live would show three of a button&rsquo;s four states as the same picture.</p>
-
-    <!-- ================================================================
-         EDITORIAL
-         ================================================================ -->
-    <h2 class="demo-group">Editorial</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-eyebrow</code> &middot; <code class="art-code">.art-display</code> &middot; <code class="art-code">.art-display--page</code> &middot; <code class="art-code">.art-meta</code></p>
-      <div class="demo-stack demo-measure">
-        <div>
-          <p class="art-eyebrow">Issue Eleven &middot; Autumn</p>
-          <h3 class="art-display">The Compositor</h3>
-          <p class="art-meta">By Nadia Vance &middot; 2 October</p>
-        </div>
-        <div>
-          <p class="art-eyebrow" lang="zh-Hans">中文版 &middot; Section</p>
-          <h3 class="art-display art-display--page">Earlier in the archive</h3>
-          <p class="art-meta">Forty-one pieces &middot; 2019&ndash;2026</p>
-        </div>
-      </div>
-      <p class="demo-note">.art-display is --art-text-5xl and steps down to --art-text-3xl under 768px; .art-display--page is the --art-text-4xl step, for a page that is not the front page. Both take --art-weight-display, which is the dark-theme optical compensation &mdash; a literal 700 here would silently opt out of it.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-lede</code></p>
-      <p class="art-lede">The lede is the one paragraph a page is allowed to centre: a step up in size, a step back in ink, and a measure narrower than the column it introduces.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-dropcap</code> &mdash; three lines, and the arithmetic that puts it there</p>
-      <p class="demo-measure"><span class="art-dropcap">T</span>he cap is derived from the metrics of the two faces actually in use, at --art-text-base and --art-leading-body: its top sits on the first line&rsquo;s cap height and its foot on the third baseline. Count the lines beside it. Swapping either typeface without redoing the sum is what turns this from a rule into a coincidence.</p>
-      <p class="demo-note">.art-dropcap is a component, not a prose rule &mdash; it works outside .art-prose, which is where this specimen sits.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-rule</code> &middot; <code class="art-code">.art-dinkus</code> &middot; <code class="art-code">.art-fleuron</code> &mdash; each carries its own air, and the amount of it is the ranking</p>
-      <hr class="art-rule">
-      <p class="demo-note">.art-rule &mdash; a hairline between two blocks. --art-space-7 above and below.</p>
-      <div class="art-dinkus" aria-hidden="true"></div>
-      <p class="demo-note">.art-dinkus &mdash; a change of subject inside an article, where a fleuron would shout. --art-space-8.</p>
-      <div class="art-fleuron" aria-hidden="true"></div>
-      <p class="demo-note">.art-fleuron &mdash; the section divider, and the system&rsquo;s signature mark. --art-space-9.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-figure</code> &middot; <code class="art-code">.art-figure__media</code> &middot; <code class="art-code">.art-figure__caption</code></p>
-      <figure class="art-figure demo-measure">
-        <svg class="art-figure__media demo-plate" viewBox="0 0 320 160" role="img" aria-label="Diagram: a ruled plate, three centred lines above two centred marks.">
-          <g fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
-            <rect x="24.5" y="24.5" width="271" height="111"/>
-            <path d="M56 60 H264"/>
-            <path d="M80 80 H240"/>
-            <path d="M104 100 H216"/>
-            <circle cx="140" cy="120" r="6"/>
-            <circle cx="180" cy="120" r="6"/>
-          </g>
-        </svg>
-        <figcaption class="art-figure__caption">Fig. 2 &mdash; .art-figure__media carries the hairline on an inline &lt;svg&gt;, which the element-scoped rule for &lt;img&gt; cannot reach. The caption is --art-text-sm in the muted ink, one --art-space-2 below the plate.</figcaption>
-      </figure>
-    </div>
-
-    <!-- ================================================================
-         BUTTONS
-         ================================================================ -->
-    <h2 class="demo-group">Buttons</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-btn</code> &middot; <code class="art-code">.art-btn--primary</code> &middot; <code class="art-code">.art-btn--secondary</code> &middot; <code class="art-code">.art-btn--outline</code> &middot; <code class="art-code">.art-btn--ghost</code> &mdash; rest</p>
-      <div class="demo-row">
-        <button class="art-btn art-btn--primary" type="button">Read the issue <span class="demo-mark" aria-hidden="true"></span></button>
-        <button class="art-btn art-btn--secondary" type="button">Subscribe</button>
-        <button class="art-btn art-btn--outline" type="button">Archive</button>
-        <button class="art-btn art-btn--ghost" type="button">Dismiss</button>
-      </div>
-      <p class="demo-note">These four are live: hover them, and tab into them. Every row below paints one of their states so the whole matrix can be read at once.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">:hover</code> &mdash; the fill and the label trade places; nothing darkens</p>
-      <div class="demo-row">
-        <button class="art-btn art-btn--primary demo-hovered--primary" type="button">Read the issue <span class="demo-mark" aria-hidden="true"></span></button>
-        <button class="art-btn art-btn--secondary demo-hovered--secondary" type="button">Subscribe</button>
-        <button class="art-btn art-btn--outline demo-hovered--outline" type="button">Archive</button>
-        <button class="art-btn art-btn--ghost demo-hovered--ghost" type="button">Dismiss</button>
-      </div>
-      <p class="demo-note">--primary swaps --art-action and --art-action-ink; --secondary swaps --art-accent-strong and --art-accent-ink; --outline fills with --art-ink and sets its label in --art-surface; --ghost gains --art-surface-raised and keeps its label. The border does not move, so the box never changes size. Hover one of these: the kit&rsquo;s own rule outranks the paint, so if a painted button changes under the pointer, it is the paint that has gone stale.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">:focus-visible</code> &mdash; 2px --art-focus at a 2px offset, on every control in the kit</p>
-      <div class="demo-row">
-        <button class="art-btn art-btn--primary demo-focused" type="button">Read the issue <span class="demo-mark" aria-hidden="true"></span></button>
-        <button class="art-btn art-btn--secondary demo-focused" type="button">Subscribe</button>
-        <button class="art-btn art-btn--outline demo-focused" type="button">Archive</button>
-        <button class="art-btn art-btn--ghost demo-focused" type="button">Dismiss</button>
-      </div>
-      <p class="demo-note">The focus contract is declared once, on element selectors rather than on .art- classes, so it also reaches the bare markup a host page brings and the links inside .art-prose. It is not negotiable per app.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">[disabled]</code> &mdash; a real attribute, not a class</p>
-      <div class="demo-row">
-        <button class="art-btn art-btn--primary" type="button" disabled>Read the issue <span class="demo-mark" aria-hidden="true"></span></button>
-        <button class="art-btn art-btn--secondary" type="button" disabled>Subscribe</button>
-        <button class="art-btn art-btn--outline" type="button" disabled>Archive</button>
-        <button class="art-btn art-btn--ghost" type="button" disabled>Dismiss</button>
-      </div>
-      <p class="demo-note">One rule for all four: 0.5 opacity and not-allowed. The hover rules are guarded with :not(:disabled), so a disabled fill never inverts.</p>
-    </div>
-
-    <!-- ================================================================
-         FIELDS
-         ================================================================ -->
-    <h2 class="demo-group">Fields</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-field</code> &middot; <code class="art-code">.art-label</code> &middot; <code class="art-code">.art-input</code> &middot; <code class="art-code">.art-hint</code> &middot; <code class="art-code">.art-hint--error</code></p>
-      <div class="demo-states">
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-in-rest">Issue letter</label>
-            <input class="art-input" id="gal-in-rest" type="email" placeholder="you@example.org" aria-describedby="gal-in-rest-hint">
-            <span class="art-hint" id="gal-in-rest-hint">Four times a year. Nothing else, ever.</span>
-          </div>
-          <span class="demo-state__name">rest &mdash; live hover and focus</span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-in-focus">Issue letter</label>
-            <input class="art-input demo-focused demo-focused-field" id="gal-in-focus" type="email" value="editor@example.org">
-            <span class="art-hint">The edge darkens to --art-ink and the outline lands outside it.</span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:focus-visible</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-in-off">Subscriber number</label>
-            <input class="art-input" id="gal-in-off" type="text" value="C-01184" disabled>
-            <span class="art-hint">Assigned when the subscription starts.</span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:disabled</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-in-bad">Issue letter</label>
-            <input class="art-input" id="gal-in-bad" type="email" value="you@example" aria-invalid="true" aria-describedby="gal-in-bad-hint">
-            <span class="art-hint art-hint--error" id="gal-in-bad-hint">That address is missing a top-level domain.</span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">[aria-invalid="true"]</code> + <code class="art-code">.art-hint--error</code></span>
-        </div>
-      </div>
-      <p class="demo-note">The error state is carried by the ARIA attribute rather than by a class, so what a screen reader announces and what the eye sees cannot disagree.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-textarea</code></p>
-      <div class="demo-states">
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-ta-rest">Marginal note</label>
-            <textarea class="art-textarea" id="gal-ta-rest" rows="3" placeholder="Write in the margin&hellip;"></textarea>
-          </div>
-          <span class="demo-state__name">rest &mdash; resize: vertical</span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-ta-focus">Marginal note</label>
-            <textarea class="art-textarea demo-focused demo-focused-field" id="gal-ta-focus" rows="3">Set the second line at 68 characters and stop arguing about it.</textarea>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:focus-visible</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-ta-off">Editor&rsquo;s note</label>
-            <textarea class="art-textarea" id="gal-ta-off" rows="3" disabled>Locked once the issue has gone to press.</textarea>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:disabled</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-ta-bad">Marginal note</label>
-            <textarea class="art-textarea" id="gal-ta-bad" rows="3" aria-invalid="true" aria-describedby="gal-ta-bad-hint">&lt;script&gt;</textarea>
-            <span class="art-hint art-hint--error" id="gal-ta-bad-hint">Notes are plain text. Angle brackets are not allowed.</span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">[aria-invalid="true"]</code></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-select</code> inside its required <code class="art-code">.art-select-wrap</code></p>
-      <div class="demo-states">
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-sel-rest">Section</label>
-            <span class="art-select-wrap">
-              <select class="art-select" id="gal-sel-rest">
-                <option>Essays</option>
-                <option>Editors</option>
-                <option>Typography</option>
-                <option lang="zh-Hans">中文版</option>
-              </select>
-            </span>
-          </div>
-          <span class="demo-state__name">rest &mdash; the wrapper carries chevron-down.svg</span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-sel-focus">Section</label>
-            <span class="art-select-wrap">
-              <select class="art-select demo-focused demo-focused-field" id="gal-sel-focus">
-                <option>Typography</option>
-                <option>Essays</option>
-              </select>
-            </span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:focus-visible</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-sel-off">Issue</label>
-            <span class="art-select-wrap">
-              <select class="art-select" id="gal-sel-off" disabled>
-                <option>Eleven &mdash; Autumn</option>
-              </select>
-            </span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">:disabled</code></span>
-        </div>
-        <div class="demo-state">
-          <div class="art-field">
-            <label class="art-label" for="gal-sel-bad">Section</label>
-            <span class="art-select-wrap">
-              <select class="art-select" id="gal-sel-bad" aria-invalid="true" aria-describedby="gal-sel-bad-hint">
-                <option>Choose a section</option>
-                <option>Essays</option>
-              </select>
-            </span>
-            <span class="art-hint art-hint--error" id="gal-sel-bad-hint">Pick a section before submitting.</span>
-          </div>
-          <span class="demo-state__name"><code class="art-code">[aria-invalid="true"]</code></span>
-        </div>
-      </div>
-      <p class="demo-note">The wrapper is the one place in the kit where a component requires an extra element, and the reason is a platform limitation rather than a design choice: a &lt;select&gt; is a replaced element with no pseudo-element to mask a mark onto, and a coloured data: URI is forbidden outright.</p>
-    </div>
-
-    <!-- ================================================================
-         CHOICE CONTROLS
-         ================================================================ -->
-    <h2 class="demo-group">Choice controls</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-choice</code> &mdash; the row a <code class="art-code">.art-check</code>, <code class="art-code">.art-radio</code> or <code class="art-code">.art-toggle</code> sits in; all three are square, and differ only by their mark</p>
-      <div class="demo-cols">
-
-        <div class="demo-stack">
-          <p class="demo-state__name"><code class="art-code">.art-check</code></p>
-          <label class="art-choice"><input class="art-check" type="checkbox"><span>Unchecked</span></label>
-          <label class="art-choice"><input class="art-check" type="checkbox" checked><span>Checked &mdash; check.svg</span></label>
-          <label class="art-choice"><input class="art-check" type="checkbox" data-indeterminate><span>Indeterminate &mdash; minus.svg</span></label>
-          <label class="art-choice"><input class="art-check" type="checkbox" disabled><span>Disabled, unchecked</span></label>
-          <label class="art-choice"><input class="art-check" type="checkbox" checked disabled><span>Disabled, checked</span></label>
-          <label class="art-choice"><input class="art-check demo-focused" type="checkbox" checked><span><code class="art-code">:focus-visible</code></span></label>
-        </div>
-
-        <fieldset class="demo-fieldset">
-          <legend class="demo-state__name"><code class="art-code">.art-radio</code> &mdash; one real group</legend>
-          <div class="demo-stack">
-            <label class="art-choice"><input class="art-radio" type="radio" name="gal-delivery" value="web"><span>Web only</span></label>
-            <label class="art-choice"><input class="art-radio" type="radio" name="gal-delivery" value="both" checked><span>Print and web</span></label>
-            <label class="art-choice"><input class="art-radio" type="radio" name="gal-delivery" value="print" disabled><span>Print only &mdash; sold out</span></label>
-            <label class="art-choice"><input class="art-radio" type="radio" name="gal-delivery-locked" value="none" checked disabled><span>Disabled, checked</span></label>
-            <label class="art-choice"><input class="art-radio demo-focused" type="radio" name="gal-delivery-focus" value="focus"><span><code class="art-code">:focus-visible</code></span></label>
-          </div>
-        </fieldset>
-
-        <div class="demo-stack">
-          <p class="demo-state__name"><code class="art-code">.art-toggle</code></p>
-          <label class="art-choice"><input class="art-toggle" type="checkbox"><span>Off</span></label>
-          <label class="art-choice"><input class="art-toggle" type="checkbox" checked><span>On</span></label>
-          <label class="art-choice"><input class="art-toggle" type="checkbox" disabled><span>Disabled, off</span></label>
-          <label class="art-choice"><input class="art-toggle" type="checkbox" checked disabled><span>Disabled, on</span></label>
-          <label class="art-choice"><input class="art-toggle demo-focused" type="checkbox" checked><span><code class="art-code">:focus-visible</code></span></label>
-        </div>
-
-      </div>
-      <p class="demo-note">The first three rows are one real group, sharing a name; the last two carry names of their own, because a disabled-and-checked radio and a painted focus specimen cannot sit in the live group without unsetting its answer.</p>
-    </div>
-
-    <!-- ================================================================
-         NAVIGATION AND STRUCTURE
-         ================================================================ -->
-    <h2 class="demo-group">Navigation and structure</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-tabs</code> &middot; <code class="art-code">.art-tab</code> &middot; <code class="art-code">.is-active</code></p>
-      <div class="art-tabs" role="tablist" aria-label="Issue eleven">
-        <button class="art-tab is-active" type="button" role="tab" id="demo-tab-essays" aria-controls="demo-panel-essays" aria-selected="true">Essays</button>
-        <button class="art-tab" type="button" role="tab" id="demo-tab-editors" aria-controls="demo-panel-editors" aria-selected="false">Editors</button>
-        <button class="art-tab" type="button" role="tab" id="demo-tab-type" aria-controls="demo-panel-type" aria-selected="false">Typography</button>
-        <button class="art-tab" type="button" role="tab" id="demo-tab-cn" aria-controls="demo-panel-cn" aria-selected="false" lang="zh-Hans">中文版</button>
-      </div>
-      <div id="demo-panel-essays" role="tabpanel" aria-labelledby="demo-tab-essays">
-        <p>Five essays, one of them about undo, none of them about plugins.</p>
-      </div>
-      <div id="demo-panel-editors" role="tabpanel" aria-labelledby="demo-tab-editors" hidden>
-        <p>Configuration as autobiography: what twenty years of an init file admits about its author.</p>
-      </div>
-      <div id="demo-panel-type" role="tabpanel" aria-labelledby="demo-tab-type" hidden>
-        <p>Three notes on leading, and one on the cost of a second typeface.</p>
-      </div>
-      <div id="demo-panel-cn" role="tabpanel" aria-labelledby="demo-tab-cn" hidden>
-        <p lang="zh-Hans">中西文混排的三条规矩，以及为什么字体栈的顺序不能颠倒。</p>
-      </div>
-      <p class="demo-note">The strip is one tab stop: arrow keys move between the tabs, Home and End jump to the ends, and only the selected tab is reachable with Tab. The active tab&rsquo;s 2px edge overlaps the strip&rsquo;s own hairline, so it reads as a break in the rule rather than as a bar sitting under it.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-table</code> &middot; <code class="art-code">.art-table__num</code> &mdash; with a <code class="art-code">&lt;thead&gt;</code> header row and a <code class="art-code">&lt;th scope="row"&gt;</code> row header</p>
-      <div class="demo-scroll">
-        <table class="art-table">
-          <caption class="demo-caption">Issue eleven, by section. The first cell of every body row is a row header, not a cell.</caption>
-          <thead>
-            <tr>
-              <th scope="col">Section</th>
-              <th scope="col">Set at</th>
-              <th scope="col" class="art-table__num">Words</th>
-              <th scope="col" class="art-table__num">Minutes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Essays</th>
-              <td>68ch</td>
-              <td class="art-table__num">2,412</td>
-              <td class="art-table__num">11</td>
-            </tr>
-            <tr>
-              <th scope="row">Editors</th>
-              <td>68ch</td>
-              <td class="art-table__num">1,860</td>
-              <td class="art-table__num">8</td>
-            </tr>
-            <tr>
-              <th scope="row">Typography</th>
-              <td>44ch</td>
-              <td class="art-table__num">940</td>
-              <td class="art-table__num">4</td>
-            </tr>
-            <tr>
-              <th scope="row" lang="zh-Hans">中文版</th>
-              <td>40em</td>
-              <td class="art-table__num">1,205</td>
-              <td class="art-table__num">5</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="demo-note">A row header is a label for its row, not a column heading, so it is set in the body ink at weight 600 and is neither uppercased nor letterspaced. .art-table__num right-aligns the two figure columns and turns on tabular figures, so the digits line up down the column whatever their width.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-list</code> &middot; <code class="art-code">.art-list-row</code> &middot; <code class="art-code">.art-list-row__title</code> &middot; <code class="art-code">.art-list-row__meta</code> &middot; <code class="art-code">.art-list-row__chevron</code></p>
-      <ul class="art-list demo-measure">
-        <li><a class="art-list-row" href="#gallery">
-          <span class="art-list-row__title">Reading Is the Feature</span>
-          <span class="art-list-row__meta">11 min</span>
-          <span class="art-list-row__chevron" aria-hidden="true"></span>
-        </a></li>
-        <li><a class="art-list-row" href="#gallery">
-          <span class="art-list-row__title">The Undo Tree Is a Diary</span>
-          <span class="art-list-row__meta">9 min</span>
-          <span class="art-list-row__chevron" aria-hidden="true"></span>
-        </a></li>
-        <li><a class="art-list-row" href="#gallery" lang="zh-Hans">
-          <span class="art-list-row__title">字体栈的顺序</span>
-          <span class="art-list-row__meta">6 分钟</span>
-          <span class="art-list-row__chevron" aria-hidden="true"></span>
-        </a></li>
-      </ul>
-      <p class="demo-note">__meta takes margin-left:auto, so the chevron stays flush right however long the title runs. The chevron is chevron-right.svg masked over the muted ink &mdash; not a glyph, and not a data: URI.</p>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-card</code> &middot; <code class="art-code">.art-badge</code></p>
-      <div class="demo-cols">
-        <div class="art-card">
-          <p class="art-eyebrow">Colophon</p>
-          <p>The Compositor is set in a display serif over a humanist sans, on warm paper, with one crimson spent structurally and nowhere else.</p>
-          <p class="demo-note">--art-space-5 of padding, one hairline, one surface step. No elevation, because there is none in the system.</p>
-        </div>
-        <div class="art-card">
-          <p class="art-eyebrow">Status</p>
-          <div class="demo-row">
-            <span class="art-badge">Draft</span>
-            <span class="art-badge">In review</span>
-            <span class="art-badge">Published</span>
-            <span class="art-badge">Withdrawn</span>
-            <span class="art-badge" lang="zh-Hans">中文版</span>
-          </div>
-          <p class="demo-note">.art-badge is one value in every state: it labels, it does not signal. A coloured badge would be a second opinion about what the accent means.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-code</code> &middot; <code class="art-code">.art-pre</code></p>
-      <p class="demo-measure">The measure lives in one token, <code class="art-code">--art-measure</code>, and is corrected in one place. That is the argument for tokens in a sentence: not that they save typing, but that they leave nowhere for a second, quietly different opinion to survive.</p>
-      <pre class="art-pre"><code class="art-code">.article__body {
-  font-family: var(--art-font-body);   /* 拉丁在前，汉字在后 */
-  font-size:   var(--art-text-base);
-  line-height: var(--art-leading-body);
-  max-width:   var(--art-measure);
-}</code></pre>
-      <p class="demo-note">.art-code inside .art-pre drops its own ground and its own size, so a block never renders as a chip inside a chip.</p>
-    </div>
-
-    <!-- ================================================================
-         MOBILE CHROME
-         ================================================================ -->
-    <h2 class="demo-group">Mobile chrome</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label"><code class="art-code">.art-appbar</code> &middot; <code class="art-code">.art-appbar__lead</code> &middot; <code class="art-code">.art-back</code> &middot; <code class="art-code">.art-appbar__title</code> &middot; <code class="art-code">.art-appbar__trail</code> &middot; <code class="art-code">.art-appbar__action</code> &middot; <code class="art-code">.art-tabbar</code> &middot; <code class="art-code">.art-tabbar__item</code> &middot; <code class="art-code">.art-tabbar__label</code></p>
-      <div class="demo-chrome">
-        <header class="art-appbar">
-          <div class="art-appbar__lead">
-            <button class="art-appbar__action art-back" type="button">Back</button>
-          </div>
-          <h3 class="art-appbar__title">Essay</h3>
-          <div class="art-appbar__trail">
-            <button class="art-appbar__action" type="button">Aa</button>
-            <button class="art-appbar__action" type="button">Save</button>
-          </div>
-        </header>
-        <div class="demo-chrome__body">
-          <p class="demo-note">390px &mdash; the width both bars are specified at. Every action is a --art-space-7 target, which is 48px, above the 44px floor.</p>
-        </div>
-        <nav class="art-tabbar" aria-label="Gallery app sections">
-          <a class="art-tabbar__item is-active" href="#gallery" aria-current="page"><span class="art-tabbar__label">Library</span></a>
-          <a class="art-tabbar__item" href="#gallery"><span class="art-tabbar__label">Reading</span></a>
-          <a class="art-tabbar__item" href="#gallery"><span class="art-tabbar__label">Settings</span></a>
-        </nav>
-      </div>
-      <p class="demo-note">.art-back is the only affordance the leading slot has &mdash; without it the slot is a bare word. The active tab-bar marker is a static 2px top edge plus an accent label; nothing travels between items, which is the one animation an editorial system is most often tempted into.</p>
-    </div>
-
-    <!-- ================================================================
-         ORNAMENTS
-         ================================================================ -->
-    <h2 class="demo-group">Ornaments</h2>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label">ornaments/*.svg &mdash; every file in the directory, masked over <code class="art-code">currentColor</code></p>
-      <div class="demo-orns">
-        <div class="demo-orn demo-orn--wide">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/fleuron.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">fleuron.svg &middot; 0 0 240 24</span>
-        </div>
-        <div class="demo-orn demo-orn--wide">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/dinkus.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">dinkus.svg &middot; 0 0 120 24</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/check.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">check.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/minus.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">minus.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/chevron-right.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">chevron-right.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/chevron-down.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">chevron-down.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/chevron-left.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">chevron-left.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/arrow-right.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">arrow-right.svg</span>
-        </div>
-        <div class="demo-orn">
-          <span class="demo-orn__mark" style="--demo-orn: url('../ornaments/external-link.svg')" aria-hidden="true"></span>
-          <span class="demo-orn__name">external-link.svg</span>
-        </div>
-      </div>
-      <p class="demo-note">Nine files, at --art-space-6 tall. Each box is filled with currentColor and cut to shape by the file, so the mark follows the theme, the accent and the disabled state without the artwork knowing anything about them. A file that is missing or malformed leaves its cell empty, which is the whole reason for showing them side by side. arrow-right.svg is the one in the buttons above; external-link.svg is the only ornament the component layer never uses, and it is here so that it cannot rot unseen.</p>
-    </div>
-
-  </section>
-
-
-  <!-- ====================================================================
-       08 — SPECIMEN
-       ==================================================================== -->
-  <div class="demo-shell demo-marker">
-    <span class="demo-marker__num">08</span>
-    <span class="demo-marker__name">Specimen</span>
-    <span class="demo-marker__note">the type scale and the semantic palette</span>
-  </div>
-
-  <section class="demo-shell demo-section demo-specs" id="specimen" aria-label="Type and colour specimen">
-
-    <div class="demo-spec">
-      <p class="demo-spec__label">Type scale &mdash; --art-text-xs through --art-text-5xl</p>
-      <div class="demo-scale">
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-xs &middot; 13</span>
-          <span class="demo-scale__sample demo-scale__sample--body" style="font-size: var(--art-text-xs)">Fine print and table metadata</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-sm &middot; 15</span>
-          <span class="demo-scale__sample demo-scale__sample--body" style="font-size: var(--art-text-sm)">Captions, hints and eyebrows</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-base &middot; 17</span>
-          <span class="demo-scale__sample demo-scale__sample--body" style="font-size: var(--art-text-base)">Body, set at the measure</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-lg &middot; 19</span>
-          <span class="demo-scale__sample demo-scale__sample--body" style="font-size: var(--art-text-lg)">Lede paragraphs</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-xl &middot; 23</span>
-          <span class="demo-scale__sample demo-scale__sample--display" style="font-size: var(--art-text-xl)">Card titles</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-2xl &middot; 28</span>
-          <span class="demo-scale__sample demo-scale__sample--display" style="font-size: var(--art-text-2xl)">Section headings</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-3xl &middot; 36</span>
-          <span class="demo-scale__sample demo-scale__sample--display" style="font-size: var(--art-text-3xl)">Page titles</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-4xl &middot; 48</span>
-          <span class="demo-scale__sample demo-scale__sample--display" style="font-size: var(--art-text-4xl)">Article titles</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">--art-text-5xl &middot; 64</span>
-          <span class="demo-scale__sample demo-scale__sample--display" style="font-size: var(--art-text-5xl)">Display</span>
-        </div>
-        <div class="demo-scale-row">
-          <span class="demo-scale__label">CJK fallback &middot; 36</span>
-          <span class="demo-scale__sample demo-scale__sample--display" lang="zh-Hans" style="font-size: var(--art-text-3xl)">排版是一种照顾</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-spec">
-      <p class="demo-spec__label">Palette &mdash; semantic roles only; every chip re-resolves when the theme flips</p>
-      <div class="demo-swatches">
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-surface)"></div><span class="demo-swatch__name">--art-surface</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-surface-raised)"></div><span class="demo-swatch__name">--art-surface-raised</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-surface-sunken)"></div><span class="demo-swatch__name">--art-surface-sunken</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-ink-strong)"></div><span class="demo-swatch__name">--art-ink-strong</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-ink)"></div><span class="demo-swatch__name">--art-ink</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-ink-muted)"></div><span class="demo-swatch__name">--art-ink-muted</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-rule)"></div><span class="demo-swatch__name">--art-rule</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-rule-strong)"></div><span class="demo-swatch__name">--art-rule-strong</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-accent)"></div><span class="demo-swatch__name">--art-accent</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-accent-strong)"></div><span class="demo-swatch__name">--art-accent-strong</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-accent-ink)"></div><span class="demo-swatch__name">--art-accent-ink</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-bar)"></div><span class="demo-swatch__name">--art-bar</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-bar-ink)"></div><span class="demo-swatch__name">--art-bar-ink</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-bar-mark)"></div><span class="demo-swatch__name">--art-bar-mark</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-bar-edge)"></div><span class="demo-swatch__name">--art-bar-edge<br>(transparent in light)</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-bar-rule)"></div><span class="demo-swatch__name">--art-bar-rule</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-action)"></div><span class="demo-swatch__name">--art-action</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-action-ink)"></div><span class="demo-swatch__name">--art-action-ink</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-link)"></div><span class="demo-swatch__name">--art-link</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-focus)"></div><span class="demo-swatch__name">--art-focus</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-danger)"></div><span class="demo-swatch__name">--art-danger</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-success)"></div><span class="demo-swatch__name">--art-success</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-warning)"></div><span class="demo-swatch__name">--art-warning</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-code-bg)"></div><span class="demo-swatch__name">--art-code-bg</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-code-ink)"></div><span class="demo-swatch__name">--art-code-ink</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-selection-bg)"></div><span class="demo-swatch__name">--art-selection-bg</span></div>
-        <div class="demo-swatch"><div class="demo-swatch__chip" style="--demo-swatch: var(--art-selection-ink)"></div><span class="demo-swatch__name">--art-selection-ink</span></div>
-      </div>
-    </div>
-
-  </section>
-
 </main>
 
 <footer class="demo-shell demo-foot" id="colophon">
   <p class="art-eyebrow">Colophon</p>
   <p class="demo-note">The Compositor is an invented publication, written to exercise the Article design system: web/tokens.css, web/article.css, web/prose.css and the nine ornament files. Every class on this page is either from the kit or prefixed <code class="art-code">demo-</code>. Nothing here is a real magazine, and nothing here is for sale.</p>
+  <p class="demo-links">
+    <a href="gallery.html">Every component, every state &rarr;</a>
+    <a href="type.html">Typefaces &rarr;</a>
+    <a href="https://github.com/gr13nka/article">Source &rarr;</a>
+  </p>
 </footer>
 
 <script type="module">
@@ -1716,51 +817,6 @@ for (const b of document.querySelectorAll('[data-dark-key]')) {
   });
 }
 setDark(root.getAttribute('data-dark'));
-
-/* ---- Gallery tabs -------------------------------------------------------
-   Roving tabindex, per strip: the whole tablist is ONE tab stop and the arrow
-   keys move inside it. Without this a three-tab strip costs three tabs to walk
-   past, which is the difference between a tablist that is keyboard-operable
-   and one that merely has role="tab" on it.
-   ------------------------------------------------------------------------- */
-for (const strip of document.querySelectorAll('.art-tabs[role="tablist"]')) {
-  const tabs = [...strip.querySelectorAll('[role="tab"]')];
-
-  const select = (tab, { focus = false } = {}) => {
-    for (const t of tabs) {
-      const on = t === tab;
-      t.classList.toggle('is-active', on);
-      t.setAttribute('aria-selected', String(on));
-      t.tabIndex = on ? 0 : -1;
-      const panel = document.getElementById(t.getAttribute('aria-controls'));
-      if (panel) panel.hidden = !on;
-    }
-    if (focus) tab.focus();
-  };
-
-  strip.addEventListener('click', (e) => {
-    const tab = e.target.closest('[role="tab"]');
-    if (tab) select(tab);
-  });
-
-  strip.addEventListener('keydown', (e) => {
-    const here = tabs.indexOf(document.activeElement);
-    if (here < 0) return;
-    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-    const next = step !== undefined ? tabs[(here + step + tabs.length) % tabs.length]
-      : e.key === 'Home' ? tabs[0]
-      : e.key === 'End' ? tabs[tabs.length - 1]
-      : null;
-    if (!next) return;
-    e.preventDefault();
-    select(next, { focus: true });
-  });
-
-  select(tabs.find((t) => t.classList.contains('is-active')) ?? tabs[0]);
-}
-
-/* An indeterminate checkbox cannot be expressed in markup; it is a property. */
-for (const box of document.querySelectorAll('[data-indeterminate]')) box.indeterminate = true;
 
 /* Placeholder links are here to be looked at, not followed. */
 document.addEventListener('click', (e) => {

@@ -368,3 +368,106 @@ runner, so it would fail on every contributor's first push).
 `lychee --offline` was adopted instead, as a step in the existing `check.yml`. It is a
 prebuilt action needing no repo-level dependency, and `--offline` checks local paths only, so
 it cannot go red because a CDN rate-limited a runner.
+
+### 2026-08-24
+
+#### The preview is a site; the gallery is a page of its own
+
+`demo/index.html` was doing two jobs at once and doing the first of them badly. It opened with
+a numbered annotation bar over every section — `01 · Masthead · .art-bar · full bleed` — and
+two thirds of its length, some ten thousand pixels of scroll, was the component gallery and the
+type/colour specimen. A stranger arriving from the README met a labelled specimen sheet, and
+nothing on it was ever allowed to look like a product.
+
+It is now two pages:
+
+- **`demo/index.html`** — three phone screens first, then one continuous publication: masthead,
+  issue opener, the lead essay, the archive index, colophon. No markers, no captions, no class
+  names. The only furniture left is the sticky theme and dark-palette control, which every shot
+  hides anyway.
+- **`demo/gallery.html`** — the gallery and the specimen, unchanged and still exhaustive, with
+  the same theme control so it remains readable in all three palettes.
+
+Phones lead because they are the strongest evidence the kit has and they were buried at
+position six of eight; because an editorial system being legible on a 390px screen is the
+claim most people doubt; and because a reader who scrolls past them arrives at the masthead
+already knowing the system is not desktop-only.
+
+The desktop half keeps its existing DOM order — masthead, hero, article, fleuron, index — for
+a reason that is not aesthetic: `tools/shoot.mjs` composes the README's hero image out of
+`.art-bar` and `#article` with `.demo-hero` hidden, and that framing only survives while the
+masthead sits directly above the article. It also reads correctly as a real page, so nothing
+was traded for it.
+
+Rejected: **deleting the gallery**, which `STYLE.md` §9 forbids and which the 2026-08-20 entry
+above argues against with three shipped defects it caught. Rejected: **collapsing it behind a
+`<details>`**, which leaves it on the page, leaves it in the scroll, and produces a gallery
+nobody opens — the visual gate only works if it is somewhere you would go on purpose. Rejected:
+**renaming `demo/index.html`**, already settled on 2026-08-21: the name is pinned by this
+append-only log and by the `…/article/demo/` directory URL the README hands out.
+
+Rejected for the desktop half: **a third, dense dashboard screen**. It is the obvious way to
+show the kit is not only for prose, and it would immediately want the density knob and a
+syntax-highlighting palette, both of which are in **Unsettled** and neither of which is built.
+A demo that quietly invents them would put pressure on canon from the wrong end.
+
+#### Two screenshot bugs the restructure exposed
+
+Neither was caused by the restructure; both were latent and are fixed in `tools/shoot.mjs`.
+
+`web-light.png` came out **dark**. The script set `data-theme` with a `Runtime.evaluate` after
+a fixed wait, but the demo's own `initTheme` resolves `system` by *removing* `data-theme` — so
+whichever ran last won, and on a cold first shot that was the page. The theme is now seeded
+into `localStorage` with `Page.addScriptToEvaluateOnNewDocument`, before any page script runs,
+so the no-flash snippet and `initTheme` agree with the shot instead of racing it. The script
+then reads the settled attributes back and **throws** if they are not what was asked for: a
+picture in the wrong theme is the one failure that still writes a plausible-looking PNG.
+
+The miss diagnostic also named `shot.clip`, which is `undefined` on every `from`/`to` shot —
+that is most of them — so the one message that fires when a selector disappears was unreadable
+in exactly the cases that need it. It now names whichever selector was actually asked for, and
+the page it was asked for on.
+
+#### The README is a landing page, and the animation is generated like the stills
+
+The README had grown to 171 lines and was carrying an options table, an install procedure, a
+submodule recipe, a font-stack note and the repo map. All of that is documentation, and a
+landing page that contains its own documentation is a page nobody finishes. It is now 123
+lines: what the kit is, one look at it, the fork loop, and links out.
+
+The adoption material moved verbatim to a new **`docs/GUIDE.md`** — install, the three
+optional files, a theme switch of your own, vendoring a fork across projects, and what's
+where. It is a fourth outward-facing document, which needs a justification given that
+`THEMING.md` and `FORK.md` already exist: neither of them covers *getting the kit into a
+project*. `THEMING.md` is about re-colouring, `FORK.md` about re-skinning with an agent.
+Installation had no home and was living in the README because there was nowhere else.
+`docs/GUIDE.md` is added to `check-sync.mjs`'s `docs` list so it counts toward class and
+token coverage like the others.
+
+**The animation.** `docs/images/themes.png` is an APNG of the same page in light, Darcula and
+Catppuccin. It is the one thing the stills cannot show, and it is the kit's headline claim.
+
+It is produced by `tools/shoot.mjs` alongside the eight screenshots, not by hand, for the
+reason the 2026-08-20 entry gives: a committed image made by hand is the one artefact that
+goes stale with nothing to catch it. That needed an APNG encoder in the repo, so
+`tools/apng.mjs` is vendored — 70 lines, `node:zlib` its only import, in keeping with
+`palette-from-image.mjs`'s zero-dep PNG decode.
+
+APNG rather than GIF, which was tried first and thrown away. A GIF carries one 256-colour
+table for the whole animation; split across a cream page, a warm grey one and a violet one,
+too few slots are left for the greys that antialias type, and Floyd–Steinberg dithering put
+visible red and blue speckle through the body text. A design system whose subject is
+typography cannot ship a picture that makes its own type look noisy. The APNG is lossless,
+and at three frames it is 203 KB against the GIF's 1.25 MB.
+
+The take is three **held states** rather than a recording. A theme change in Article is
+instantaneous — the palette is an attribute and no colour transitions — so sampling thirty-five
+frames of it captured the same three pictures thirty-five times.
+
+Rejected: **a badge row**, again, and for the reason already logged on 2026-08-21 — the
+authoring skill asks for one and the answer here has not changed. Rejected: **transparent
+rounded corners** on the images, which that skill also asks for. `--art-radius` is `0` and a
+radio button in Article is a square; rounding the corners of the first picture a visitor sees
+would contradict the product in the same glance that introduces it. The images stay square,
+and the `<picture>` element already solves what the rounding was for, by giving each theme its
+own shot.

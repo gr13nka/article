@@ -1,161 +1,113 @@
-<h1 align="center">Article</h1>
+<!-- craft-readme: voice=plain -->
+<div align="center">
 
-<p align="center"><strong>Eliminate slop design.</strong></p>
+<h1>Article</h1>
 
-<p align="center">A design language for software that is mostly words.</p>
+<p><strong>Eliminate slop design.</strong></p>
 
-<p align="center">
-  <a href="https://gr13nka.github.io/article/demo/">Interactive demo &rarr;</a>
-  &middot;
-  <a href="FORK.md">Fork it</a>
-  &middot;
-  <a href="STYLE.md">The rules</a>
-</p>
+<p>A CSS design language for software that is mostly words: docs, dev tools, dashboards, reading apps.</p>
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/web-dark.png">
-    <img alt="An Article page — crimson masthead, display serif headline, drop cap" src="docs/screenshots/web-light.png" width="860">
-  </picture>
-</p>
+<p><a href="https://gr13nka.github.io/article/demo/">Preview</a> · <a href="https://gr13nka.github.io/article/demo/gallery.html">Components</a> · <a href="FORK.md">Fork it</a> · <a href="STYLE.md">The rules</a></p>
 
-Agents build competent interfaces that all look the same, because nothing tells them what
-*your* software looks like. Article is that missing instruction, written down — a formal,
-editorial kit for docs, dev tools, dashboards and reading apps. It looks like a well-set
-page, not an app.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/web-dark.png">
+  <img alt="An Article page — crimson masthead, display serif headline, drop cap" src="docs/screenshots/web-light.png" width="100%">
+</picture>
 
-Fork it once, and everything you build afterwards looks like yours. It is a starting point,
-not a finished brand: it ships one opinion and expects you to replace it.
+<br><br>
 
-## The loop
+<img alt="The same page in light, Darcula and Catppuccin" src="docs/images/themes.png" width="480">
 
-1. **Fork it.**
-2. **Look at [the preview](https://gr13nka.github.io/article/demo/)** — every component, in
-   every state, in both themes, on desktop and on a phone.
-3. **Like it?** Point your agent at [`FORK.md`](FORK.md) and [`CLAUDE.md`](CLAUDE.md), and
-   ask it to apply Article to what you're building.
-4. **Don't?** Ask your agent to re-skin it first — an accent, a typeface, or a whole palette
-   read out of a screenshot you like. Then reload the preview and *look before you apply*.
-5. **Keep the fork.** Re-apply it to the next thing you build, and the thing after that.
+</div>
 
-`FORK.md` is written to be handed to an agent on its own. It carries the six values that
-decide how the kit feels, the four traps that will bite, and the one command that says
-whether the result is still legible. Reading the canon is not a prerequisite.
+Agents build interfaces that all look the same, because nothing tells them what *your*
+software looks like. Article is that instruction, written down.
 
-## What you get
+Two files do the work. `tokens.css` declares every colour, size and space as a custom
+property. `article.css` spends them on 64 component classes. Together they are 12 kB gzipped,
+with no build step and no dependencies. Light and dark are each declared once, with
+`light-dark()`, so there is no second palette to drift out of sync. All 51 colour pairs clear
+WCAG AA in both themes and in the alternate dark one, checked on every push.
 
-- **No build step, no dependencies, no framework.** Two stylesheets and a `<link>`.
-- **Light and dark, both first class** — plus a second dark palette in the box.
-- **Every colour pair clears WCAG AA in both themes**, and a script proves it on every push.
-- **Squared corners, hairlines, no shadows.** A radio button here is a square.
-- **Desktop and mobile**, in English and Chinese.
-- **~12 kB gzipped.**
+It is set like a page rather than an app: squared corners, hairlines, no shadows. It holds at
+phone widths, and in Chinese.
 
-## Use it
+It has no modals and no grid system. What it does have is on one page:
+[every component in every state](https://gr13nka.github.io/article/demo/gallery.html).
 
-```html
-<meta name="color-scheme" content="light dark">
-<link rel="stylesheet" href="web/tokens.css">
-<link rel="stylesheet" href="web/article.css">
-<link rel="stylesheet" href="web/prose.css">   <!-- only for long-form text -->
+## Fork it, don't install it
+
+Article is meant to be forked and kept. The fork is your house style, and re-applying it is
+how your projects stop looking machine-made.
+
+1. Fork it.
+2. Open [the preview](https://gr13nka.github.io/article/demo/) and look at it in both themes.
+3. Like it? Hand [`FORK.md`](FORK.md) to your agent and ask it to apply Article.
+4. Don't? Ask it to re-skin first, then reload the preview.
+
+[`FORK.md`](FORK.md) is written to be read by an agent on its own: six values, four traps,
+one command.
+
+> Read `FORK.md`. Re-skin Article from the attached screenshot: run
+> `node tools/palette-from-image.mjs ref.png --roles`, put the values in the `--art-c-*`
+> and `--art-dk-*` blocks of `web/tokens.css`, and change nothing below them. Stop when
+> `node tools/check-sync.mjs --contrast` is green, then show me `demo/gallery.html`.
+
+## Quick start
+
+```sh
+gh repo fork gr13nka/article --clone
+cd article
+python3 -m http.server 8770        # http://127.0.0.1:8770/
 ```
 
-```js
-import { initTheme } from './web/theme.js';
-const theme = initTheme();          // light / dark / follow the system
-themeButton.addEventListener('click', theme.cycle);
-```
+It has to be `http`. ES modules do not load over `file://`.
 
-That is the whole setup. Fonts and the no-flash snippet are in [index.html](index.html) —
-copy the `<head>` from there.
+To put it in a project instead, copy `web/` and `ornaments/` in side by side, then link the
+two stylesheets. [Install →](docs/GUIDE.md#install)
 
-`prose.css` styles plain HTML inside `.art-prose`, so rendered Markdown just works, with no
-classes at all.
+## Re-colouring it
 
-## Both themes
-
-Neither theme is the other one dimmed. Each value is chosen for the job it does in that
-theme — which is why the masthead is a crimson block in light and a raised panel with an
-accent edge in dark.
-
-| Light | Dark |
-| :---: | :---: |
-| ![Three phone screens, light](docs/screenshots/mobile-light.png) | ![Three phone screens, dark](docs/screenshots/mobile-dark.png) |
-
-A second dark palette ships alongside the default. Switching is one attribute —
-`<html data-dark="catppuccin">`:
-
-<p align="center">
-  <img alt="The same page in the Catppuccin dark palette" src="docs/screenshots/web-catppuccin.png" width="720">
-</p>
-
-## Make it yours
-
-Six values decide how the kit feels. **[FORK.md](FORK.md)** is the recipe.
-
-Seen a design you like? Screenshot it and read the colours straight out of the image:
+Six values at the top of `web/tokens.css` decide how the kit feels. To take them out of a
+screenshot you like rather than picking by hand:
 
 ```sh
 node tools/palette-from-image.mjs ref.png --roles
 ```
 
-You get the colours, mapped to Article's roles, with the contrast already checked. Article's
-own light theme was built this way. Then:
+They come back mapped to Article's roles with the contrast already checked. Then:
 
 ```sh
 node tools/check-sync.mjs --contrast
 ```
 
-Green means you're done. That is the only test you have to pass.
+Green means it is legible in both themes. That is the gate, and CI runs it too.
 
-## Run it locally
+## Both themes, and a second dark one
 
-```sh
-git clone https://github.com/gr13nka/article && cd article
-python3 -m http.server 8770
-```
+| Light | Dark |
+| :---: | :---: |
+| ![Three phone screens, light](docs/screenshots/mobile-light.png) | ![Three phone screens, dark](docs/screenshots/mobile-dark.png) |
 
-Open <http://127.0.0.1:8770/>. Use `http`, not `file://` — ES modules do not load over
-`file://`.
+Catppuccin ships alongside Darcula, and switching is one attribute: `<html data-dark="catppuccin">`.
+`tokens.css` re-points the dark primitives behind it and nothing else changes.
+[Add your own →](THEMING.md#adding-your-own-dark-palette)
 
 ## Type
 
-**Vollkorn** for headings, **Inter** for text, **JetBrains Mono** for code. Chinese falls
-back to **Noto Serif SC**, **Noto Sans SC** and **Noto Sans Mono**.
+**Vollkorn** headings, **Inter** text, **JetBrains Mono** code. Chinese falls back to
+**Noto Serif SC**, **Noto Sans SC** and **Noto Sans Mono**. Keep the Latin face first: the Noto
+fonts include Latin and will take over the whole page if you put them first. Note that changing
+the display face invalidates the drop cap, which is derived from that face's cap height.
+[Change the type →](THEMING.md#change-the-type)
 
-If you change a font, keep the Latin face first in the stack. The Noto fonts include Latin
-too, and will quietly take over the whole page if you put them first.
+## Docs
 
-## Two rules worth knowing
-
-**Colours are defined once**, using CSS `light-dark()`. There is no second copy of the
-palette to fall out of sync.
-
-**Never put a colour inside a `data:` URI.** `currentColor` cannot reach in there, so the
-mark can never follow the theme. Marks live in `ornaments/` and are drawn with `mask-image`.
-Get this wrong and the design can never have a dark mode.
-
-## What's where
-
-| Path | |
-|---|---|
-| `web/tokens.css` | All the colours, type and spacing. **The file you edit** |
-| `web/article.css` | Components — buttons, forms, tables, lists, app bars |
-| `web/prose.css` | Long-form text |
-| `web/theme.js` | Theme switching |
-| `ornaments/` | The little marks — fleuron, checks, chevrons |
-| `index.html` | The landing page |
-| `demo/index.html` | The preview — every component in every state |
-| `demo/type.html` | Typeface sampler, for choosing by eye |
-| `FORK.md` | How to re-skin it. **Hand this to your agent** |
-| `CLAUDE.md` | The rules an agent breaks by accident |
-| `THEMING.md` | More detail on palettes and type |
-| `STYLE.md` | The rules, and why they exist |
-| `DECISIONS.md` | What was decided, and what was rejected |
-| `tools/check-sync.mjs` | Drift checker and contrast gate |
-| `tools/palette-from-image.mjs` | Read a palette out of a picture |
-| `tools/shoot.mjs` | Regenerate these screenshots |
+- [Install, and the optional files →](docs/GUIDE.md#install)
+- [Reuse your fork across projects →](docs/GUIDE.md#reuse-your-fork-across-projects)
+- [What not to change →](THEMING.md#what-not-to-change)
+- [The rules, and why →](STYLE.md)
 
 ## Licence
 
-MIT. Use it, fork it, make it yours.
+MIT.

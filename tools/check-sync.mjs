@@ -34,9 +34,9 @@ const CONFIG = {
   skillMd: process.env.ARTICLE_SKILL_MD ?? join(homedir(), '.claude/skills/article-style/SKILL.md'),
   tokens: 'web/tokens.css',
   componentCss: ['web/article.css', 'web/prose.css'],
-  docs: ['STYLE.md', 'THEMING.md', 'README.md', 'FORK.md'],
+  docs: ['STYLE.md', 'THEMING.md', 'README.md', 'FORK.md', 'docs/GUIDE.md'],
   ornamentDir: 'ornaments',
-  demoPages: ['index.html', 'demo/index.html', 'demo/type.html'],
+  demoPages: ['index.html', 'demo/index.html', 'demo/gallery.html', 'demo/type.html'],
   fontSurfaces: ['web/tokens.css', 'STYLE.md', 'README.md', 'demo/index.html'],
 };
 

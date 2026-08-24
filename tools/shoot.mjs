@@ -22,9 +22,11 @@ import { fileURLToPath } from 'node:url';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
+import { encodeAPNG } from './apng.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs/screenshots');
+const IMG = join(ROOT, 'docs/images');
 const PORT = 8899;
 
 const MIME = { html: 'text/html', css: 'text/css', js: 'text/javascript', svg: 'image/svg+xml', png: 'image/png' };
@@ -57,7 +59,8 @@ function findBrowser() {
 
 /* Each shot names existing elements in the demo rather than requiring markers
    in the markup — taking pictures should not make the page carry attributes it
-   has no other use for. `from`/`to` clip the union of two elements. */
+   has no other use for. `from`/`to` clip the union of two elements, and `page`
+   picks which demo page to shoot (default demo/index.html). */
 const SHOTS = [
   // The hero alone is faithful to the reference but very sparse, which reads as
   // an empty page at README size. Hiding the hero puts the masthead directly
@@ -70,18 +73,44 @@ const SHOTS = [
   { file: 'index-light.png',    w: 1440, theme: 'light', clip: '#index' },
   // The gallery is ~10,000px tall, so it is sampled rather than captured whole:
   // 'sel@n' picks the nth match, and from/to clips the span between two of them.
-  { file: 'gallery-light.png',  w: 1440, theme: 'light', from: '.demo-group@1', to: '.demo-group@3' },
+  // The indices are positional: reorder the groups and this quietly becomes a
+  // picture of two different components.
+  { file: 'gallery-light.png',  w: 1440, theme: 'light', page: 'demo/gallery.html', from: '.demo-group@1', to: '.demo-group@3' },
   { file: 'mobile-light.png',   w: 1440, theme: 'light', clip: '.demo-phones-strip' },
   { file: 'mobile-dark.png',    w: 1440, theme: 'dark',  clip: '.demo-phones-strip' },
 ];
 
-/* The demo's own furniture — the sticky control strip and the little class-name
-   annotations — explains the kit to a reader of the page, but in a README
-   screenshot it reads as clutter over the design. Hidden for the capture only. */
+/* The demo's own furniture — the sticky theme and palette control — explains the
+   kit to a reader of the page, but in a README screenshot it reads as clutter
+   over the design. Hidden for the capture only. */
 const HIDE_CHROME = `
-  .demo-controls, .demo-marker { display: none !important; }
+  .demo-controls { display: none !important; }
   html { scroll-behavior: auto !important; }
 `;
+
+/*
+ * The animations. A theme change in Article is instantaneous — the palette is
+ * an attribute and nothing about a colour transitions — so a take is a list of
+ * HELD STATES, not a recording. Three screenshots and three delays say
+ * everything a sampled take would, at three frames instead of thirty-five.
+ */
+const TAKES = [
+  {
+    file: 'themes.png',
+    page: 'demo/index.html',
+    w: 960, h: 900, dsf: 1,
+    // The phones have their own picture; hiding them puts the masthead at the
+    // top of the page so the clip needs no scrolling.
+    hide: ['.demo-phones-strip'],
+    clip: { x: 0, y: 0, width: 960, height: 726 },
+    hold: 1.3,
+    states: [
+      { theme: 'light' },
+      { theme: 'dark' },
+      { theme: 'dark', dark: 'catppuccin' },
+    ],
+  },
+];
 
 const send = (() => {
   let id = 0;
@@ -148,11 +177,23 @@ async function main() {
       { width: shot.w, height: 1200, deviceScaleFactor: 2, mobile: false }, sessionId);
 
     const qs = `?theme=${shot.theme}${shot.dark ? `&dark=${shot.dark}` : ''}`;
-    await send(ws, 'Page.navigate', { url: `http://127.0.0.1:${PORT}/demo/index.html${qs}` }, sessionId);
+    const page = shot.page ?? 'demo/index.html';
+
+    // Seed the page's own storage BEFORE any of its scripts run. Setting the
+    // attribute after load is not enough: initTheme resolves `system` by
+    // REMOVING data-theme, so whichever of the two runs last wins, and the
+    // loser is a light-named file holding a dark picture.
+    const { identifier } = await send(ws, 'Page.addScriptToEvaluateOnNewDocument', {
+      source: `try{
+        localStorage.setItem('art-theme', ${JSON.stringify(shot.theme)});
+        localStorage.setItem('art-demo-dark', ${JSON.stringify(shot.dark ?? 'darcula')});
+      }catch(e){}`,
+    }, sessionId);
+
+    await send(ws, 'Page.navigate', { url: `http://127.0.0.1:${PORT}/${page}${qs}` }, sessionId);
     await wait(1400);
 
-    // The demo persists theme in localStorage; force it explicitly so a shot
-    // never inherits whatever the previous one left behind.
+    // Belt and braces: the storage seed decides the theme, this only restates it.
     await send(ws, 'Runtime.evaluate', { expression: `
       document.documentElement.setAttribute('data-theme', ${JSON.stringify(shot.theme)});
       ${shot.dark ? `document.documentElement.setAttribute('data-dark', ${JSON.stringify(shot.dark)});`
@@ -160,6 +201,22 @@ async function main() {
       document.fonts.ready.then(() => 1);
     `, awaitPromise: false }, sessionId);
     await wait(900);
+
+    await send(ws, 'Page.removeScriptToEvaluateOnNewDocument', { identifier }, sessionId);
+
+    // A picture in the wrong theme is the one failure this script cannot see,
+    // because every other symptom of it still writes a plausible-looking PNG.
+    const seen = await send(ws, 'Runtime.evaluate', { expression: `
+      JSON.stringify({
+        theme: document.documentElement.getAttribute('data-theme'),
+        dark: document.documentElement.getAttribute('data-dark'),
+      })
+    `, returnByValue: true }, sessionId);
+    const got = JSON.parse(seen.result.value);
+    if (got.theme !== shot.theme || (got.dark ?? undefined) !== shot.dark) {
+      throw new Error(`${shot.file}: page settled on theme=${got.theme} dark=${got.dark}, `
+        + `expected theme=${shot.theme} dark=${shot.dark ?? 'none'}`);
+    }
 
     const box = await send(ws, 'Runtime.evaluate', { expression: `
       (() => {
@@ -189,7 +246,9 @@ async function main() {
       params.clip = { x: b.x, y: Math.max(0, b.y), width: b.width,
                       height: Math.min(b.height, shot.max ?? 2400), scale: 1 };
     } else {
-      console.log(`    (no element for ${shot.clip} — full viewport instead)`);
+      // Naming the selector that was actually asked for: shot.clip is undefined
+      // on every from/to shot, which is most of them.
+      console.log(`    (no element for ${shot.clip ?? `${shot.from} -> ${shot.to}`} in ${page} — full viewport instead)`);
     }
 
     const { data } = await send(ws, 'Page.captureScreenshot', params, sessionId);
@@ -198,11 +257,54 @@ async function main() {
     console.log(`  ${shot.file.padEnd(22)} ${(statSync(file).size / 1024).toFixed(0).padStart(5)} KB`);
   }
 
+  for (const take of TAKES) {
+    await send(ws, 'Emulation.setDeviceMetricsOverride',
+      { width: take.w, height: take.h, deviceScaleFactor: take.dsf ?? 2, mobile: false }, sessionId);
+
+    // Seeded light, then driven by attribute. The load-time race the shots
+    // guard against is over by the time the first state is set.
+    const { identifier } = await send(ws, 'Page.addScriptToEvaluateOnNewDocument', {
+      source: `try{localStorage.setItem('art-theme','light');localStorage.setItem('art-demo-dark','darcula');}catch(e){}`,
+    }, sessionId);
+    await send(ws, 'Page.navigate', { url: `http://127.0.0.1:${PORT}/${take.page}` }, sessionId);
+    await wait(1600);
+    await send(ws, 'Page.removeScriptToEvaluateOnNewDocument', { identifier }, sessionId);
+
+    await send(ws, 'Runtime.evaluate', { expression: `
+      const st = document.createElement('style');
+      st.textContent = ${JSON.stringify(HIDE_CHROME)}
+        + ${JSON.stringify(take.hide.join(','))} + '{display:none !important}';
+      document.head.appendChild(st);
+      scrollTo(0, 0);
+      document.fonts.ready.then(() => 1);
+    `, awaitPromise: false }, sessionId);
+    await wait(900);
+
+    const frames = [];
+    for (const state of take.states) {
+      await send(ws, 'Runtime.evaluate', { expression: `
+        document.documentElement.setAttribute('data-theme', ${JSON.stringify(state.theme)});
+        ${state.dark ? `document.documentElement.setAttribute('data-dark', ${JSON.stringify(state.dark)});`
+                     : `document.documentElement.removeAttribute('data-dark');`}
+      `, returnByValue: true }, sessionId);
+      await wait(450);
+      const { data } = await send(ws, 'Page.captureScreenshot',
+        { format: 'png', captureBeyondViewport: true, clip: { ...take.clip, scale: 1 } }, sessionId);
+      frames.push({ png: Buffer.from(data, 'base64'), seconds: take.hold });
+    }
+
+    const { buffer, w, h, frames: n } = encodeAPNG(frames);
+    mkdirSync(IMG, { recursive: true });
+    const file = join(IMG, take.file);
+    writeFileSync(file, buffer);
+    console.log(`  ${take.file.padEnd(22)} ${(buffer.length / 1024).toFixed(0).padStart(5)} KB  ${w}x${h}, ${n} frames`);
+  }
+
   ws.close(); proc.kill(); server.close();
   // Chrome may still be flushing its profile as it exits; a failed tmp cleanup
   // must not fail a successful run.
   try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
-  console.log(`\n  ${SHOTS.length} screenshots in docs/screenshots/\n`);
+  console.log(`\n  ${SHOTS.length} screenshots in docs/screenshots/, ${TAKES.length} animation in docs/images/\n`);
 }
 
 main().catch((e) => { console.error(`shoot: ${e.message}`); process.exit(1); });

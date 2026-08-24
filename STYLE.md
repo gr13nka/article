@@ -416,9 +416,11 @@ three knobs, that is a signal to revisit this document, not to special-case the 
 - **`tools/check-sync.mjs` is the gate.** Run it before every commit, and
   `--contrast` after touching any colour — it measures every documented pair in *every*
   palette, including the alternates, and prints the table.
-- **The component gallery in `demo/index.html` is the visual gate.** It renders every
+- **The component gallery in `demo/gallery.html` is the visual gate.** It renders every
   component in every state; three shipped defects were found the first time it was built, none
-  of which the checker could see. Keep it exhaustive.
+  of which the checker could see. Keep it exhaustive. It has a page to itself because
+  `demo/index.html` is a shop window and a gallery is not a shop window — but the two jobs are
+  separated, not traded off.
 
 
 ---
